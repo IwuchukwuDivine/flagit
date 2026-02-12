@@ -1,0 +1,264 @@
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
+import { setup, $fetch } from '@nuxt/test-utils'
+import prisma from '~/server/utils/prisma'
+
+describe('Complaints API', async () => {
+  await setup({
+    server: true,
+  })
+
+  beforeAll(async () => {
+    // Create the table directly using raw SQL
+    await prisma.$executeRawUnsafe(`
+      CREATE TABLE IF NOT EXISTS Complaint (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        body TEXT NOT NULL,
+        imageUrl TEXT,
+        authorName TEXT NOT NULL,
+        category TEXT NOT NULL,
+        location TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'pending',
+        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+  })
+
+  beforeEach(async () => {
+    // Clean up database before each test
+    await prisma.complaint.deleteMany()
+  })
+
+  afterAll(async () => {
+    // Clean up after all tests
+    await prisma.complaint.deleteMany()
+    await prisma.$disconnect()
+  })
+
+  describe('POST /api/complaints', () => {
+    it('creates a complaint and returns it with status 200', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        body: 'There is a large pothole on Main Street',
+        authorName: 'John Doe',
+        category: 'roads',
+        location: 'Main Street',
+      }
+
+      const response = await $fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })
+
+      expect(response).toBeDefined()
+      expect(response.id).toBeDefined()
+      expect(response.title).toBe(complaintData.title)
+      expect(response.body).toBe(complaintData.body)
+      expect(response.authorName).toBe(complaintData.authorName)
+      expect(response.category).toBe(complaintData.category)
+      expect(response.location).toBe(complaintData.location)
+      expect(response.status).toBe('pending')
+      expect(response.createdAt).toBeDefined()
+      expect(response.updatedAt).toBeDefined()
+    })
+
+    it('returns 400 if title is missing', async () => {
+      const complaintData = {
+        body: 'There is a large pothole on Main Street',
+        authorName: 'John Doe',
+        category: 'roads',
+        location: 'Main Street',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 if body is missing', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        authorName: 'John Doe',
+        category: 'roads',
+        location: 'Main Street',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 if authorName is missing', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        body: 'There is a large pothole on Main Street',
+        category: 'roads',
+        location: 'Main Street',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 if category is missing', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        body: 'There is a large pothole on Main Street',
+        authorName: 'John Doe',
+        location: 'Main Street',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 if location is missing', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        body: 'There is a large pothole on Main Street',
+        authorName: 'John Doe',
+        category: 'roads',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 if category is invalid', async () => {
+      const complaintData = {
+        title: 'Broken road',
+        body: 'There is a large pothole on Main Street',
+        authorName: 'John Doe',
+        category: 'invalid-category',
+        location: 'Main Street',
+      }
+
+      await expect($fetch('/api/complaints', {
+        method: 'POST',
+        body: complaintData,
+      })).rejects.toThrow()
+    })
+  })
+
+  describe('GET /api/complaints', () => {
+    it('returns all complaints sorted by newest first', async () => {
+      // Create multiple complaints
+      const complaint1 = await prisma.complaint.create({
+        data: {
+          title: 'First complaint',
+          body: 'First body',
+          authorName: 'John Doe',
+          category: 'roads',
+          location: 'Location 1',
+        },
+      })
+
+      // Wait a bit to ensure different timestamps
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      const complaint2 = await prisma.complaint.create({
+        data: {
+          title: 'Second complaint',
+          body: 'Second body',
+          authorName: 'Jane Doe',
+          category: 'water',
+          location: 'Location 2',
+        },
+      })
+
+      const response = await $fetch('/api/complaints')
+
+      expect(response).toBeDefined()
+      expect(Array.isArray(response)).toBe(true)
+      expect(response.length).toBe(2)
+      // Newest first
+      expect(response[0].id).toBe(complaint2.id)
+      expect(response[1].id).toBe(complaint1.id)
+    })
+
+    it('returns an empty array when no complaints exist', async () => {
+      const response = await $fetch('/api/complaints')
+
+      expect(response).toBeDefined()
+      expect(Array.isArray(response)).toBe(true)
+      expect(response.length).toBe(0)
+    })
+  })
+
+  describe('GET /api/complaints/:id', () => {
+    it('returns a single complaint by ID', async () => {
+      const complaint = await prisma.complaint.create({
+        data: {
+          title: 'Test complaint',
+          body: 'Test body',
+          authorName: 'John Doe',
+          category: 'roads',
+          location: 'Test location',
+        },
+      })
+
+      const response = await $fetch(`/api/complaints/${complaint.id}`)
+
+      expect(response).toBeDefined()
+      expect(response.id).toBe(complaint.id)
+      expect(response.title).toBe(complaint.title)
+      expect(response.body).toBe(complaint.body)
+    })
+
+    it('returns 404 for a non-existent ID', async () => {
+      await expect($fetch('/api/complaints/99999')).rejects.toThrow()
+    })
+
+    it('returns 400 for an invalid ID', async () => {
+      await expect($fetch('/api/complaints/invalid')).rejects.toThrow()
+    })
+  })
+
+  describe('DELETE /api/complaints/:id', () => {
+    it('deletes the complaint and returns a success response', async () => {
+      const complaint = await prisma.complaint.create({
+        data: {
+          title: 'Test complaint',
+          body: 'Test body',
+          authorName: 'John Doe',
+          category: 'roads',
+          location: 'Test location',
+        },
+      })
+
+      const response = await $fetch(`/api/complaints/${complaint.id}`, {
+        method: 'DELETE',
+      })
+
+      expect(response).toBeDefined()
+      expect(response.success).toBe(true)
+
+      // Verify it was deleted
+      const deletedComplaint = await prisma.complaint.findUnique({
+        where: { id: complaint.id },
+      })
+      expect(deletedComplaint).toBeNull()
+    })
+
+    it('returns 404 for a non-existent ID', async () => {
+      await expect($fetch('/api/complaints/99999', {
+        method: 'DELETE',
+      })).rejects.toThrow()
+    })
+
+    it('returns 400 for an invalid ID', async () => {
+      await expect($fetch('/api/complaints/invalid', {
+        method: 'DELETE',
+      })).rejects.toThrow()
+    })
+  })
+})

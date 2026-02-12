@@ -1,0 +1,1 @@
+import{_ as l,z as o,A as n,y as r}from"./R90t_QMR.js";const s={};function t(a,e){return r(),o("div",null,[...e[0]||(e[0]=[n("h1",null,"Speak Up",-1),n("p",null,"Civic complaints platform",-1)])])}const i=l(s,[["render",t],["__file","/Users/dee_vyn/monolithic-ralph/pages/index.vue"]]);export{i as default};

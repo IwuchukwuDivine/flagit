@@ -1,0 +1,32 @@
+{
+  "name": "monolithic-ralph",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.6.2",
+    "nuxt": "^4.3.1",
+    "prisma": "^5.22.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@nuxt/test-utils": "^4.0.0",
+    "@vue/test-utils": "^2.4.6",
+    "dotenv": "^17.2.4",
+    "happy-dom": "^20.6.1",
+    "vitest": "^4.0.18"
+  }
+}
