@@ -6,24 +6,6 @@ const { data: complaints, error } = await useFetch<Complaint[]>('/api/complaints
 
 <template>
   <div class="min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900">Speak Up</h1>
-            <p class="text-gray-600 mt-1">Civic complaints platform</p>
-          </div>
-          <NuxtLink
-            to="/submit"
-            class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            Submit Complaint
-          </NuxtLink>
-        </div>
-      </div>
-    </header>
-
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Error State -->
