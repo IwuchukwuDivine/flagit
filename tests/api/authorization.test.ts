@@ -11,31 +11,50 @@ describe('Authorization Logic', async () => {
   let user2Id: number
 
   beforeAll(async () => {
-    // Create two test users
-    const user1Response = await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
-        name: 'User One',
-        email: 'user1@example.com',
-        password: 'password123',
-      },
-    })
-    user1Id = user1Response.user.id
-
-    const user2Response = await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
-        name: 'User Two',
-        email: 'user2@example.com',
-        password: 'password123',
-      },
-    })
-    user2Id = user2Response.user.id
+    // Clean up before starting
+    await prisma.complaint.deleteMany()
+    await prisma.user.deleteMany()
   })
 
   beforeEach(async () => {
     // Clean up complaints before each test
     await prisma.complaint.deleteMany()
+
+    // Ensure test users exist (might have been deleted by previous test suite)
+    const existingUser1 = await prisma.user.findUnique({
+      where: { email: 'user1@example.com' },
+    })
+    const existingUser2 = await prisma.user.findUnique({
+      where: { email: 'user2@example.com' },
+    })
+
+    if (!existingUser1) {
+      const user1Response = await $fetch('/api/auth/register', {
+        method: 'POST',
+        body: {
+          name: 'User One',
+          email: 'user1@example.com',
+          password: 'password123',
+        },
+      })
+      user1Id = user1Response.user.id
+    } else {
+      user1Id = existingUser1.id
+    }
+
+    if (!existingUser2) {
+      const user2Response = await $fetch('/api/auth/register', {
+        method: 'POST',
+        body: {
+          name: 'User Two',
+          email: 'user2@example.com',
+          password: 'password123',
+        },
+      })
+      user2Id = user2Response.user.id
+    } else {
+      user2Id = existingUser2.id
+    }
   })
 
   afterAll(async () => {

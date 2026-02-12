@@ -5,6 +5,7 @@ export default defineVitestConfig({
   test: {
     environment: 'nuxt',
     globals: true,
+    fileParallelism: false,
     env: {
       DATABASE_URL: `file:${join(process.cwd(), 'prisma', 'dev.db')}`,
     },

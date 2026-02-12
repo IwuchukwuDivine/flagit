@@ -217,8 +217,8 @@ describe('Auth API', async () => {
 
   describe('GET /api/auth/me', () => {
     it('returns the authenticated user profile', async () => {
-      // Register and login
-      const registerResponse = await $fetch('/api/auth/register', {
+      // Register to create a user and get session
+      await $fetch('/api/auth/register', {
         method: 'POST',
         body: {
           name: 'John Doe',
@@ -227,7 +227,7 @@ describe('Auth API', async () => {
         },
       })
 
-      // Get the session cookie from the response
+      // The cookie should be automatically sent with the next request
       const response = await $fetch('/api/auth/me')
 
       expect(response).toBeDefined()

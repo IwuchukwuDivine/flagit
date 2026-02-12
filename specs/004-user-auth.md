@@ -96,10 +96,22 @@ Use `nuxt-auth-utils` or a simple JWT-based auth system — whichever integrates
 - [ ] All existing tests from Phases 1–3 still pass (no regressions)
 - [ ] `nuxt build` succeeds with no errors
 
-## Status: COMPLETE
+## Status: IN PROGRESS
 
-All acceptance criteria met. User authentication implemented with cookie-based sessions, auth endpoints working, frontend pages created, and authorization checks in place. Build succeeds with no errors.
+**Regression Found**: Tests are failing due to cookie session not persisting between $fetch requests in the Nuxt test environment.
 
-## Completion Signal
+**Issues**:
+1. The `$fetch` utility from `@nuxt/test-utils` doesn't automatically persist cookies between calls
+2. 10 out of 46 tests failing - all related to authentication/authorization
+3. Tests pass locally in isolation but fail when run together due to database cleanup conflicts
 
-**Output when complete:** ` DONE `
+**Fixes Applied**:
+- Fixed error handling in auth endpoints (register/login) to prevent crashes
+- Updated test setup to recreate users between test suites
+- Added `fileParallelism: false` to run tests sequentially
+- 36 of 46 tests now passing
+
+**Remaining Work**:
+- Need to manually handle cookie persistence in tests OR refactor to use a different auth approach for testing
+- Consider using supertest or similar library that handles cookies automatically
+- OR implement a test-only auth header approach

@@ -13,30 +13,41 @@ describe('Upload API', async () => {
   let testUserId: number
 
   beforeAll(async () => {
-    // Create a test user for auth-required operations
-    const userResponse = await $fetch('/api/auth/register', {
-      method: 'POST',
-      body: {
-        name: 'Test User',
-        email: 'test@example.com',
-        password: 'password123',
-      },
-    })
-    testUserId = userResponse.user.id
+    // Clean up before starting
+    await prisma.complaint.deleteMany()
+    await prisma.user.deleteMany()
   })
 
   beforeEach(async () => {
     // Clean up complaints before each test
     await prisma.complaint.deleteMany()
 
-    // Ensure we're logged in for tests that need auth
-    await $fetch('/api/auth/login', {
-      method: 'POST',
-      body: {
-        email: 'test@example.com',
-        password: 'password123',
-      },
+    // Ensure test user exists (might have been deleted by previous test suite)
+    const existingUser = await prisma.user.findUnique({
+      where: { email: 'test@example.com' },
     })
+
+    if (!existingUser) {
+      const userResponse = await $fetch('/api/auth/register', {
+        method: 'POST',
+        body: {
+          name: 'Test User',
+          email: 'test@example.com',
+          password: 'password123',
+        },
+      })
+      testUserId = userResponse.user.id
+    } else {
+      testUserId = existingUser.id
+      // Login with existing user
+      await $fetch('/api/auth/login', {
+        method: 'POST',
+        body: {
+          email: 'test@example.com',
+          password: 'password123',
+        },
+      })
+    }
   })
 
   afterAll(async () => {
