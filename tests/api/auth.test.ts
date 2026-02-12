@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils'
 import prisma from '~/server/utils/prisma'
+import { TestClient } from '../helpers/testClient'
 
 describe('Auth API', async () => {
   await setup({
@@ -217,8 +218,10 @@ describe('Auth API', async () => {
 
   describe('GET /api/auth/me', () => {
     it('returns the authenticated user profile', async () => {
+      const client = new TestClient()
+
       // Register to create a user and get session
-      await $fetch('/api/auth/register', {
+      await client.fetch('/api/auth/register', {
         method: 'POST',
         body: {
           name: 'John Doe',
@@ -228,7 +231,7 @@ describe('Auth API', async () => {
       })
 
       // The cookie should be automatically sent with the next request
-      const response = await $fetch('/api/auth/me')
+      const response = await client.fetch('/api/auth/me')
 
       expect(response).toBeDefined()
       expect(response.user).toBeDefined()
@@ -237,17 +240,19 @@ describe('Auth API', async () => {
     })
 
     it('returns 401 when not authenticated', async () => {
-      // Note: In test environment, we can't easily clear sessions
-      // This test might need to be adjusted based on how sessions work in tests
-      // For now, we'll skip this specific test case
-      // as it requires session management in tests
+      // Use a fresh client with no cookies
+      await expect(
+        $fetch('/api/auth/me')
+      ).rejects.toThrow()
     })
   })
 
   describe('POST /api/auth/logout', () => {
     it('clears the session', async () => {
+      const client = new TestClient()
+
       // Register first
-      await $fetch('/api/auth/register', {
+      await client.fetch('/api/auth/register', {
         method: 'POST',
         body: {
           name: 'John Doe',
@@ -257,7 +262,7 @@ describe('Auth API', async () => {
       })
 
       // Logout
-      const response = await $fetch('/api/auth/logout', {
+      const response = await client.fetch('/api/auth/logout', {
         method: 'POST',
       })
 

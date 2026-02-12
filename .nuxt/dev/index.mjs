@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, clearSession, getSession, readMultipartFormData, getResponseStatusText } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, deleteCookie, getCookie, readMultipartFormData, getResponseStatusText } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto, { randomUUID } from 'node:crypto';
@@ -2140,22 +2140,7 @@ const plugins = [
 _qBnFp1MhI4nSBRS91ErXoXNj0hGhwdo62D8lW08LFjs
 ];
 
-const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1d033-zyeIxG30grVlAEbCk06T61EbhtU\"",
-    "mtime": "2026-02-12T14:03:52.023Z",
-    "size": 118835,
-    "path": "index.mjs"
-  },
-  "/index.mjs.map": {
-    "type": "application/json",
-    "etag": "\"733f4-92v1JB3bQymVzjZe34w0o+ccN7o\"",
-    "mtime": "2026-02-12T14:03:52.023Z",
-    "size": 472052,
-    "path": "index.mjs.map"
-  }
-};
+const assets = {};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -2967,6 +2952,18 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const SESSION_COOKIE_NAME = "speak-up-session";
+function encodeSession(user) {
+  return Buffer.from(JSON.stringify(user)).toString("base64");
+}
+function decodeSession(encoded) {
+  try {
+    const json = Buffer.from(encoded, "base64").toString("utf-8");
+    return JSON.parse(json);
+  } catch {
+    return null;
+  }
+}
 async function hashPassword(password) {
   return bcrypt.hash(password, 10);
 }
@@ -2974,16 +2971,25 @@ async function verifyPassword(password, hash) {
   return bcrypt.compare(password, hash);
 }
 async function setUserSession(event, user) {
-  await setSession(event, {
-    user
+  const encoded = encodeSession(user);
+  setCookie(event, SESSION_COOKIE_NAME, encoded, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 60 * 60 * 24 * 7,
+    // 7 days
+    path: "/"
   });
 }
 async function getUserSession(event) {
-  const session = await getSession(event);
-  return (session == null ? void 0 : session.user) || null;
+  const encoded = getCookie(event, SESSION_COOKIE_NAME);
+  if (!encoded) return null;
+  return decodeSession(encoded);
 }
 async function clearUserSession(event) {
-  await clearSession(event);
+  deleteCookie(event, SESSION_COOKIE_NAME, {
+    path: "/"
+  });
 }
 async function requireAuth(event) {
   const user = await getUserSession(event);
@@ -3038,7 +3044,7 @@ const login_post = defineEventHandler(async (event) => {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        message: error.errors[0].message
+        message: "Validation error"
       });
     }
     throw error;
@@ -3124,9 +3130,10 @@ const register_post = defineEventHandler(async (event) => {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        message: error.errors[0].message
+        message: "Validation error"
       });
     }
+    console.error("Registration error:", error);
     throw error;
   }
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils'
 import prisma from '~/server/utils/prisma'
+import { TestClient } from '../helpers/testClient'
 
 describe('Complaints API', async () => {
   await setup({
@@ -8,6 +9,7 @@ describe('Complaints API', async () => {
   })
 
   let testUserId: number
+  let testClient: TestClient
 
   beforeAll(async () => {
     // Clean up before starting
@@ -19,13 +21,16 @@ describe('Complaints API', async () => {
     // Clean up complaints before each test
     await prisma.complaint.deleteMany()
 
+    // Create a fresh test client for each test
+    testClient = new TestClient()
+
     // Ensure test user exists (might have been deleted by previous test suite)
     const existingUser = await prisma.user.findUnique({
       where: { email: 'test@example.com' },
     })
 
     if (!existingUser) {
-      const userResponse = await $fetch('/api/auth/register', {
+      const userResponse = await testClient.fetch('/api/auth/register', {
         method: 'POST',
         body: {
           name: 'Test User',
@@ -37,7 +42,7 @@ describe('Complaints API', async () => {
     } else {
       testUserId = existingUser.id
       // Login with existing user
-      await $fetch('/api/auth/login', {
+      await testClient.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'test@example.com',
@@ -63,7 +68,7 @@ describe('Complaints API', async () => {
         location: 'Main Street',
       }
 
-      const response = await $fetch('/api/complaints', {
+      const response = await testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })
@@ -88,7 +93,7 @@ describe('Complaints API', async () => {
         location: 'Main Street',
       }
 
-      await expect($fetch('/api/complaints', {
+      await expect(testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })).rejects.toThrow()
@@ -101,7 +106,7 @@ describe('Complaints API', async () => {
         location: 'Main Street',
       }
 
-      await expect($fetch('/api/complaints', {
+      await expect(testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })).rejects.toThrow()
@@ -114,7 +119,7 @@ describe('Complaints API', async () => {
         location: 'Main Street',
       }
 
-      await expect($fetch('/api/complaints', {
+      await expect(testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })).rejects.toThrow()
@@ -127,7 +132,7 @@ describe('Complaints API', async () => {
         category: 'roads',
       }
 
-      await expect($fetch('/api/complaints', {
+      await expect(testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })).rejects.toThrow()
@@ -141,7 +146,7 @@ describe('Complaints API', async () => {
         location: 'Main Street',
       }
 
-      await expect($fetch('/api/complaints', {
+      await expect(testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })).rejects.toThrow()
@@ -238,7 +243,7 @@ describe('Complaints API', async () => {
         },
       })
 
-      const response = await $fetch(`/api/complaints/${complaint.id}`, {
+      const response = await testClient.fetch(`/api/complaints/${complaint.id}`, {
         method: 'DELETE',
       })
 
@@ -253,13 +258,13 @@ describe('Complaints API', async () => {
     })
 
     it('returns 404 for a non-existent ID', async () => {
-      await expect($fetch('/api/complaints/99999', {
+      await expect(testClient.fetch('/api/complaints/99999', {
         method: 'DELETE',
       })).rejects.toThrow()
     })
 
     it('returns 400 for an invalid ID', async () => {
-      await expect($fetch('/api/complaints/invalid', {
+      await expect(testClient.fetch('/api/complaints/invalid', {
         method: 'DELETE',
       })).rejects.toThrow()
     })

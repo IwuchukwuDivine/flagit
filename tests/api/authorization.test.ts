@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils'
 import prisma from '~/server/utils/prisma'
+import { TestClient } from '../helpers/testClient'
 
 describe('Authorization Logic', async () => {
   await setup({
@@ -73,14 +74,20 @@ describe('Authorization Logic', async () => {
         location: 'Main Street',
       }
 
-      // Try to create complaint without authentication
-      // Note: This test may not work properly in test environment with persistent sessions
-      // You may need to clear cookies between tests for this to work correctly
+      // Try to create complaint without authentication (using fresh client with no cookies)
+      await expect(
+        $fetch('/api/complaints', {
+          method: 'POST',
+          body: complaintData,
+        })
+      ).rejects.toThrow()
     })
 
     it('auto-sets authorName and userId from session', async () => {
+      const client = new TestClient()
+
       // Login as user1
-      await $fetch('/api/auth/login', {
+      await client.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user1@example.com',
@@ -95,7 +102,7 @@ describe('Authorization Logic', async () => {
         location: 'Main Street',
       }
 
-      const response = await $fetch('/api/complaints', {
+      const response = await client.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })
@@ -107,8 +114,10 @@ describe('Authorization Logic', async () => {
     })
 
     it('does not accept authorName in the request body', async () => {
+      const client = new TestClient()
+
       // Login as user1
-      await $fetch('/api/auth/login', {
+      await client.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user1@example.com',
@@ -125,7 +134,7 @@ describe('Authorization Logic', async () => {
         authorName: 'Fake Name',
       }
 
-      const response = await $fetch('/api/complaints', {
+      const response = await client.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })
@@ -138,8 +147,10 @@ describe('Authorization Logic', async () => {
 
   describe('DELETE /api/complaints/:id - Authorization', () => {
     it('allows user to delete their own complaint', async () => {
+      const client = new TestClient()
+
       // Login as user1
-      await $fetch('/api/auth/login', {
+      await client.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user1@example.com',
@@ -148,7 +159,7 @@ describe('Authorization Logic', async () => {
       })
 
       // Create complaint as user1
-      const complaint = await $fetch('/api/complaints', {
+      const complaint = await client.fetch('/api/complaints', {
         method: 'POST',
         body: {
           title: 'My complaint',
@@ -159,7 +170,7 @@ describe('Authorization Logic', async () => {
       })
 
       // Delete own complaint
-      const response = await $fetch(`/api/complaints/${complaint.id}`, {
+      const response = await client.fetch(`/api/complaints/${complaint.id}`, {
         method: 'DELETE',
       })
 
@@ -173,8 +184,11 @@ describe('Authorization Logic', async () => {
     })
 
     it('prevents user from deleting another users complaint', async () => {
+      const client1 = new TestClient()
+      const client2 = new TestClient()
+
       // Login as user1 and create complaint
-      await $fetch('/api/auth/login', {
+      await client1.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user1@example.com',
@@ -182,7 +196,7 @@ describe('Authorization Logic', async () => {
         },
       })
 
-      const complaint = await $fetch('/api/complaints', {
+      const complaint = await client1.fetch('/api/complaints', {
         method: 'POST',
         body: {
           title: 'User 1 complaint',
@@ -193,7 +207,7 @@ describe('Authorization Logic', async () => {
       })
 
       // Login as user2
-      await $fetch('/api/auth/login', {
+      await client2.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user2@example.com',
@@ -203,7 +217,7 @@ describe('Authorization Logic', async () => {
 
       // Try to delete user1's complaint as user2
       await expect(
-        $fetch(`/api/complaints/${complaint.id}`, {
+        client2.fetch(`/api/complaints/${complaint.id}`, {
           method: 'DELETE',
         })
       ).rejects.toThrow()
@@ -216,8 +230,10 @@ describe('Authorization Logic', async () => {
     })
 
     it('returns 404 for non-existent complaint', async () => {
+      const client = new TestClient()
+
       // Login as user1
-      await $fetch('/api/auth/login', {
+      await client.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'user1@example.com',
@@ -227,7 +243,7 @@ describe('Authorization Logic', async () => {
 
       // Try to delete non-existent complaint
       await expect(
-        $fetch('/api/complaints/99999', {
+        client.fetch('/api/complaints/99999', {
           method: 'DELETE',
         })
       ).rejects.toThrow()

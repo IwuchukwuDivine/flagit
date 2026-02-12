@@ -4,6 +4,7 @@ import { readFile, rm } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import prisma from '~/server/utils/prisma'
+import { TestClient } from '../helpers/testClient'
 
 describe('Upload API', async () => {
   await setup({
@@ -11,6 +12,7 @@ describe('Upload API', async () => {
   })
 
   let testUserId: number
+  let testClient: TestClient
 
   beforeAll(async () => {
     // Clean up before starting
@@ -22,13 +24,16 @@ describe('Upload API', async () => {
     // Clean up complaints before each test
     await prisma.complaint.deleteMany()
 
+    // Create a fresh test client for each test
+    testClient = new TestClient()
+
     // Ensure test user exists (might have been deleted by previous test suite)
     const existingUser = await prisma.user.findUnique({
       where: { email: 'test@example.com' },
     })
 
     if (!existingUser) {
-      const userResponse = await $fetch('/api/auth/register', {
+      const userResponse = await testClient.fetch('/api/auth/register', {
         method: 'POST',
         body: {
           name: 'Test User',
@@ -40,7 +45,7 @@ describe('Upload API', async () => {
     } else {
       testUserId = existingUser.id
       // Login with existing user
-      await $fetch('/api/auth/login', {
+      await testClient.fetch('/api/auth/login', {
         method: 'POST',
         body: {
           email: 'test@example.com',
@@ -240,7 +245,7 @@ describe('Upload API', async () => {
         imageUrl: uploadResponse.url,
       }
 
-      const response = await $fetch('/api/complaints', {
+      const response = await testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })
@@ -257,7 +262,7 @@ describe('Upload API', async () => {
         location: 'Main Street',
       }
 
-      const response = await $fetch('/api/complaints', {
+      const response = await testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })
@@ -286,7 +291,7 @@ describe('Upload API', async () => {
         imageUrl: uploadResponse.url,
       }
 
-      const createResponse = await $fetch('/api/complaints', {
+      const createResponse = await testClient.fetch('/api/complaints', {
         method: 'POST',
         body: complaintData,
       })

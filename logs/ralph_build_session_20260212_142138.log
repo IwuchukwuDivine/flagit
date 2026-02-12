@@ -64,3 +64,25 @@
 [0;35m════════════════════ LOOP 5 ════════════════════[0m
 [0;34m[2026-02-12 15:00:32][0m Starting iteration 5
 
+
+[0;32m✓ Claude execution completed[0m
+[0;32m✓ Completion signal detected: <promise>DONE</promise>[0m
+[0;32m✓ Task completed successfully![0m
+
+[0;34mWaiting 2s before next iteration...[0m
+
+[0;35m════════════════════ LOOP 6 ════════════════════[0m
+[0;34m[2026-02-12 15:13:29][0m Starting iteration 6
+
+
+[0;32m✓ Claude execution completed[0m
+[1;33m⚠ No completion signal found[0m
+[1;33m  Agent did not output <promise>DONE</promise> or <promise>ALL_DONE</promise>[0m
+[1;33m  This means acceptance criteria were not met.[0m
+[1;33m  Retrying in next iteration...[0m
+
+[0;34mWaiting 2s before next iteration...[0m
+
+[0;35m════════════════════ LOOP 7 ════════════════════[0m
+[0;34m[2026-02-12 15:21:50][0m Starting iteration 7
+

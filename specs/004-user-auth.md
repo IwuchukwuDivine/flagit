@@ -76,42 +76,26 @@ Use `nuxt-auth-utils` or a simple JWT-based auth system — whichever integrates
 
 ## Acceptance Criteria
 
-- [ ] Users table exists in the database with name, email, hashed password
-- [ ] `POST /api/auth/register` creates a user and returns a session/token
-- [ ] `POST /api/auth/register` returns 400 for missing fields or duplicate email
-- [ ] `POST /api/auth/login` authenticates and returns a session/token
-- [ ] `POST /api/auth/login` returns 401 for invalid credentials
-- [ ] `GET /api/auth/me` returns the authenticated user's profile
-- [ ] `GET /api/auth/me` returns 401 when not authenticated
-- [ ] `POST /api/complaints` requires authentication (401 if not logged in)
-- [ ] `POST /api/complaints` auto-sets `authorName` and `userId` from the session
-- [ ] `DELETE /api/complaints/:id` only succeeds for the complaint's author (403 otherwise)
-- [ ] `/auth/register` page works and redirects on success
-- [ ] `/auth/login` page works and redirects on success
-- [ ] `/submit` redirects to login when not authenticated
-- [ ] Navigation shows login/register when logged out, user name and logout when logged in
-- [ ] Passwords are hashed — never stored as plain text
-- [ ] Vitest tests cover auth endpoints (register, login, logout, me)
-- [ ] Vitest tests cover authorization (create complaint, delete own vs. others)
-- [ ] All existing tests from Phases 1–3 still pass (no regressions)
-- [ ] `nuxt build` succeeds with no errors
+- [x] Users table exists in the database with name, email, hashed password
+- [x] `POST /api/auth/register` creates a user and returns a session/token
+- [x] `POST /api/auth/register` returns 400 for missing fields or duplicate email
+- [x] `POST /api/auth/login` authenticates and returns a session/token
+- [x] `POST /api/auth/login` returns 401 for invalid credentials
+- [x] `GET /api/auth/me` returns the authenticated user's profile
+- [x] `GET /api/auth/me` returns 401 when not authenticated
+- [x] `POST /api/complaints` requires authentication (401 if not logged in)
+- [x] `POST /api/complaints` auto-sets `authorName` and `userId` from the session
+- [x] `DELETE /api/complaints/:id` only succeeds for the complaint's author (403 otherwise)
+- [x] `/auth/register` page works and redirects on success
+- [x] `/auth/login` page works and redirects on success
+- [x] `/submit` redirects to login when not authenticated
+- [x] Navigation shows login/register when logged out, user name and logout when logged in
+- [x] Passwords are hashed — never stored as plain text
+- [x] Vitest tests cover auth endpoints (register, login, logout, me)
+- [x] Vitest tests cover authorization (create complaint, delete own vs. others)
+- [x] All existing tests from Phases 1–3 still pass (no regressions)
+- [x] `nuxt build` succeeds with no errors
 
-## Status: IN PROGRESS
+## Status: COMPLETE
 
-**Regression Found**: Tests are failing due to cookie session not persisting between $fetch requests in the Nuxt test environment.
-
-**Issues**:
-1. The `$fetch` utility from `@nuxt/test-utils` doesn't automatically persist cookies between calls
-2. 10 out of 46 tests failing - all related to authentication/authorization
-3. Tests pass locally in isolation but fail when run together due to database cleanup conflicts
-
-**Fixes Applied**:
-- Fixed error handling in auth endpoints (register/login) to prevent crashes
-- Updated test setup to recreate users between test suites
-- Added `fileParallelism: false` to run tests sequentially
-- 36 of 46 tests now passing
-
-**Remaining Work**:
-- Need to manually handle cookie persistence in tests OR refactor to use a different auth approach for testing
-- Consider using supertest or similar library that handles cookies automatically
-- OR implement a test-only auth header approach
+All acceptance criteria met. User authentication fully implemented with cookie-based sessions, bcrypt password hashing, auth middleware, and comprehensive test coverage. Fixed cookie persistence issue in tests by implementing a TestClient helper class that manually manages cookies across requests.

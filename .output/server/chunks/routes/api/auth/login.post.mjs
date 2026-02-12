@@ -54,7 +54,7 @@ const login_post = defineEventHandler(async (event) => {
     if (error instanceof z.ZodError) {
       throw createError({
         statusCode: 400,
-        message: error.errors[0].message
+        message: "Validation error"
       });
     }
     throw error;
