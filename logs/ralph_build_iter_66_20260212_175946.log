@@ -1,0 +1,37 @@
+## Re-Verification Complete: Spec 002 - Image Upload
+
+I've successfully re-verified **all** acceptance criteria from spec 002:
+
+### Verification Results:
+
+✅ **POST /api/upload accepts multipart image and saves to public/uploads/** - Verified via test at tests/api/upload.test.ts:94-113
+
+✅ **Upload response returns the public URL** - Verified via test, returns format `/uploads/{uuid}.{ext}`
+
+✅ **Each uploaded file gets a unique filename** - Verified via test at tests/api/upload.test.ts:115-137 using UUID
+
+✅ **Upload rejects non-image files (jpg, jpeg, png, webp only)** - Verified via tests at tests/api/upload.test.ts:169-224 (rejects txt, pdf, svg)
+
+✅ **Upload rejects files larger than 5MB** - Verified via test at tests/api/upload.test.ts:181-191
+
+✅ **POST /api/complaints accepts optional imageUrl field** - Verified via test at tests/api/upload.test.ts:228-255
+
+✅ **Complaints created without imageUrl still work** - Verified via test at tests/api/upload.test.ts:257-272
+
+✅ **GET /api/complaints/:id returns imageUrl when present** - Verified via test at tests/api/upload.test.ts:274-303
+
+✅ **Vitest tests cover all scenarios** - 12 upload tests + 3 integration tests = comprehensive coverage
+
+✅ **All existing Phase 1 tests still pass** - All 46 tests passed with no regressions
+
+✅ **Build succeeds** - `npm run build` completed successfully with no TypeScript errors
+
+### Implementation Quality:
+- Upload endpoint at server/api/upload.post.ts:1-86 properly validates file type, size, and generates unique UUIDs
+- Proper error handling with 400 for validation errors, 500 for server errors
+- Files saved to public/uploads/ directory
+- Supports jpg, jpeg, png, webp formats with 5MB max file size
+
+All acceptance criteria are **100% verified and passing**. Spec 002 remains correctly marked as COMPLETE.
+
+<promise>DONE</promise>

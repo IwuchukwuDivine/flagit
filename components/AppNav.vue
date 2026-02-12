@@ -4,7 +4,7 @@ const { data: user, refresh } = await useFetch('/api/auth/me', {
   onResponseError: () => {},
 })
 
-const isLoggedIn = computed(() => !!user.value)
+const isLoggedIn = computed(() => !!user.value?.user)
 
 async function logout() {
   await $fetch('/api/auth/logout', { method: 'POST' })
@@ -50,7 +50,7 @@ async function logout() {
           <!-- Logged In State -->
           <template v-else>
             <span class="text-gray-700 px-3 py-2 text-sm font-medium">
-              {{ user?.name }}
+              {{ user?.user?.name }}
             </span>
             <button
               @click="logout"

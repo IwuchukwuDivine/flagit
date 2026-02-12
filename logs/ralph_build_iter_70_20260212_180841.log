@@ -1,0 +1,29 @@
+## Re-verification Complete: Spec 002 - Image Upload
+
+I've successfully re-verified **ALL** acceptance criteria for spec 002:
+
+### Verification Summary:
+
+✅ **Upload Endpoint Tests (12 tests passing)**
+- `POST /api/upload` accepts multipart images and saves to `public/uploads/`
+- Upload returns public URL of saved image
+- Unique filenames generated (UUID-based, no overwrites)
+- Accepts jpg, jpeg, png, and webp files
+- Rejects invalid file types (txt, pdf, svg) with 400
+- Rejects files larger than 5MB with 400
+
+✅ **Complaint Integration Tests (3 tests passing)**
+- `POST /api/complaints` accepts optional `imageUrl` field and stores it
+- Complaints without `imageUrl` still work (nullable field)
+- `GET /api/complaints/:id` returns `imageUrl` when present
+
+✅ **Implementation Quality**
+- Upload endpoint (`server/api/upload.post.ts:1-86`) properly validates type and size
+- Prisma schema has `imageUrl String?` (nullable) field
+- Complaint API accepts optional imageUrl in validation schema
+- All 46 tests pass (no regressions from Phase 1)
+- Build succeeds with no TypeScript errors
+
+**All acceptance criteria are 100% met. No issues found.**
+
+<promise>DONE</promise>
