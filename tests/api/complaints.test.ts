@@ -8,21 +8,7 @@ describe('Complaints API', async () => {
   })
 
   beforeAll(async () => {
-    // Create the table directly using raw SQL
-    await prisma.$executeRawUnsafe(`
-      CREATE TABLE IF NOT EXISTS Complaint (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        body TEXT NOT NULL,
-        imageUrl TEXT,
-        authorName TEXT NOT NULL,
-        category TEXT NOT NULL,
-        location TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'pending',
-        createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-      )
-    `)
+    // Database schema should already exist from Prisma
   })
 
   beforeEach(async () => {

@@ -33,18 +33,18 @@ Add image upload capability to the complaint system. Citizens can attach photo e
 
 ## Acceptance Criteria
 
-- [ ] `POST /api/upload` accepts a multipart image and saves it to `public/uploads/`
-- [ ] Upload response returns the public URL of the saved image
-- [ ] Each uploaded file gets a unique filename (no overwrites)
-- [ ] Upload rejects files that are not `jpg`, `jpeg`, `png`, or `webp` with 400
-- [ ] Upload rejects files larger than 5MB with 400
-- [ ] `POST /api/complaints` accepts an optional `imageUrl` field and stores it
-- [ ] Complaints created without `imageUrl` still work as before
-- [ ] `GET /api/complaints/:id` returns the `imageUrl` when present
-- [ ] Vitest tests cover the upload endpoint (valid file, invalid type, oversized file)
-- [ ] Vitest tests cover complaint creation with and without imageUrl
-- [ ] All existing Phase 1 tests still pass (no regressions)
+- [x] `POST /api/upload` accepts a multipart image and saves it to `public/uploads/`
+- [x] Upload response returns the public URL of the saved image
+- [x] Each uploaded file gets a unique filename (no overwrites)
+- [x] Upload rejects files that are not `jpg`, `jpeg`, `png`, or `webp` with 400
+- [x] Upload rejects files larger than 5MB with 400
+- [x] `POST /api/complaints` accepts an optional `imageUrl` field and stores it
+- [x] Complaints created without `imageUrl` still work as before
+- [x] `GET /api/complaints/:id` returns the `imageUrl` when present
+- [x] Vitest tests cover the upload endpoint (valid file, invalid type, oversized file)
+- [x] Vitest tests cover complaint creation with and without imageUrl
+- [x] All existing Phase 1 tests still pass (no regressions)
 
-## Completion Signal
+## Status: COMPLETE
 
-**Output when complete:** ` DONE `
+All acceptance criteria met. Upload endpoint implemented with proper validation, complaints API updated to accept optional imageUrl, and all tests passing.
