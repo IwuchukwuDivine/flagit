@@ -14,6 +14,10 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 interface _GlobalComponents {
+  CategoryBadge: typeof import("../../components/CategoryBadge.vue")['default']
+  ComplaintCard: typeof import("../../components/ComplaintCard.vue")['default']
+  ComplaintForm: typeof import("../../components/ComplaintForm.vue")['default']
+  ImageUpload: typeof import("../../components/ImageUpload.vue")['default']
   NuxtWelcome: typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']
   NuxtLayout: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
   NuxtErrorBoundary: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -37,6 +41,10 @@ interface _GlobalComponents {
   Html: typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Html']
   Body: typeof import("../../node_modules/nuxt/dist/head/runtime/components")['Body']
   NuxtIsland: typeof import("../../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+  LazyCategoryBadge: LazyComponent<typeof import("../../components/CategoryBadge.vue")['default']>
+  LazyComplaintCard: LazyComponent<typeof import("../../components/ComplaintCard.vue")['default']>
+  LazyComplaintForm: LazyComponent<typeof import("../../components/ComplaintForm.vue")['default']>
+  LazyImageUpload: LazyComponent<typeof import("../../components/ImageUpload.vue")['default']>
   LazyNuxtWelcome: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
   LazyNuxtLayout: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
   LazyNuxtErrorBoundary: LazyComponent<typeof import("../../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>

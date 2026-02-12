@@ -54,22 +54,22 @@ Build the Nuxt 3 frontend pages for the citizen complaints platform. Three pages
 
 ## Acceptance Criteria
 
-- [ ] `/` page loads and displays complaints from the API, newest first
-- [ ] Each complaint card shows title, body preview, image thumbnail, author, category, and relative time
-- [ ] Clicking a card navigates to `/complaints/:id`
-- [ ] `/submit` page renders a form with all required fields and a category dropdown
-- [ ] Image upload shows a preview of the selected image before submission
-- [ ] Submitting the form creates a complaint via the API and redirects to `/`
-- [ ] Form shows validation feedback if required fields are missing
-- [ ] `/complaints/:id` page shows full complaint details including the full-size image
-- [ ] `/complaints/:id` shows a not-found message for invalid IDs
-- [ ] All components use `<script setup lang="ts">`
-- [ ] All styling uses Tailwind CSS utility classes
-- [ ] Layout is responsive and looks good on mobile and desktop
-- [ ] `nuxt build` succeeds with no TypeScript errors
-- [ ] No ESLint errors
-- [ ] All existing backend tests from Phase 1 and Phase 2 still pass
+- [x] `/` page loads and displays complaints from the API, newest first
+- [x] Each complaint card shows title, body preview, image thumbnail, author, category, and relative time
+- [x] Clicking a card navigates to `/complaints/:id`
+- [x] `/submit` page renders a form with all required fields and a category dropdown
+- [x] Image upload shows a preview of the selected image before submission
+- [x] Submitting the form creates a complaint via the API and redirects to `/`
+- [x] Form shows validation feedback if required fields are missing
+- [x] `/complaints/:id` page shows full complaint details including the full-size image
+- [x] `/complaints/:id` shows a not-found message for invalid IDs
+- [x] All components use `<script setup lang="ts">`
+- [x] All styling uses Tailwind CSS utility classes
+- [x] Layout is responsive and looks good on mobile and desktop
+- [x] `nuxt build` succeeds with no TypeScript errors
+- [x] No ESLint errors
+- [x] All existing backend tests from Phase 1 and Phase 2 still pass
 
-## Completion Signal
+## Status: COMPLETE
 
-**Output when complete:** ` DONE `
+All acceptance criteria met. Frontend pages implemented with Tailwind CSS, all components follow Nuxt conventions, build succeeds, and all backend tests pass.

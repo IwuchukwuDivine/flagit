@@ -14,6 +14,10 @@ type HydrationStrategies = {
 type LazyComponent<T> = DefineComponent<HydrationStrategies, {}, {}, {}, {}, {}, {}, { hydrated: () => void }> & T
 
 
+export const CategoryBadge: typeof import("../components/CategoryBadge.vue")['default']
+export const ComplaintCard: typeof import("../components/ComplaintCard.vue")['default']
+export const ComplaintForm: typeof import("../components/ComplaintForm.vue")['default']
+export const ImageUpload: typeof import("../components/ImageUpload.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']
@@ -37,6 +41,10 @@ export const Head: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Html']
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
+export const LazyCategoryBadge: LazyComponent<typeof import("../components/CategoryBadge.vue")['default']>
+export const LazyComplaintCard: LazyComponent<typeof import("../components/ComplaintCard.vue")['default']>
+export const LazyComplaintForm: LazyComponent<typeof import("../components/ComplaintForm.vue")['default']>
+export const LazyImageUpload: LazyComponent<typeof import("../components/ImageUpload.vue")['default']>
 export const LazyNuxtWelcome: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/welcome.vue")['default']>
 export const LazyNuxtLayout: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']>
 export const LazyNuxtErrorBoundary: LazyComponent<typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary.vue")['default']>
