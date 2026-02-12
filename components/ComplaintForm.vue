@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Ref } from 'vue'
+
 const imageUploadRef = ref<{ selectedFile: Ref<File | null>; clearSelection: () => void } | null>(null)
 
 const formData = reactive({
@@ -72,9 +74,11 @@ const handleSubmit = async () => {
     let imageUrl: string | undefined
 
     // Upload image if selected
-    if (imageUploadRef.value?.selectedFile?.value) {
+    const imageRef = imageUploadRef.value
+    const file = imageRef?.selectedFile ? unref(imageRef.selectedFile) : null
+    if (file) {
       const formDataImg = new FormData()
-      formDataImg.append('image', imageUploadRef.value.selectedFile.value)
+      formDataImg.append('image', file)
 
       const uploadResponse = await $fetch<{ url: string }>('/api/upload', {
         method: 'POST',

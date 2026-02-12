@@ -181,14 +181,14 @@ describe('Complaints API', async () => {
         },
       })
 
-      const response = await $fetch('/api/complaints')
+      const response = await $fetch<Array<{ id: number }>>('/api/complaints')
 
       expect(response).toBeDefined()
       expect(Array.isArray(response)).toBe(true)
       expect(response.length).toBe(2)
       // Newest first
-      expect(response[0].id).toBe(complaint2.id)
-      expect(response[1].id).toBe(complaint1.id)
+      expect(response[0]?.id).toBe(complaint2.id)
+      expect(response[1]?.id).toBe(complaint1.id)
     })
 
     it('returns an empty array when no complaints exist', async () => {

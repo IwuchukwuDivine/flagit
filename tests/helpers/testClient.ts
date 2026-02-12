@@ -26,7 +26,7 @@ export class TestClient {
         ...options,
         headers,
         // Use a custom onResponse to capture cookies
-        async onResponse({ response: res }) {
+        async onResponse({ response: res }: { response: any }) {
           // Extract Set-Cookie headers
           const setCookie = res.headers.get('set-cookie')
           if (setCookie) {

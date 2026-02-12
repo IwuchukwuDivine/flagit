@@ -181,7 +181,7 @@ describe('Upload API', async () => {
     it('rejects files larger than 5MB', async () => {
       const largeImageBuffer = createTestImage(6 * 1024 * 1024) // 6MB
       const formData = new FormData()
-      const blob = new Blob([largeImageBuffer], { type: 'image/png' })
+      const blob = new Blob([new Uint8Array(largeImageBuffer)], { type: 'image/png' })
       formData.append('file', blob, 'large.png')
 
       await expect($fetch('/api/upload', {

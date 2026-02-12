@@ -5,7 +5,7 @@ const complaintSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   body: z.string().min(1, 'Body is required'),
   category: z.enum(['roads', 'water', 'electricity', 'sanitation'], {
-    errorMap: () => ({ message: 'Invalid category' }),
+    message: 'Invalid category',
   }),
   location: z.string().min(1, 'Location is required'),
   imageUrl: z.string().optional(),
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 400,
         statusMessage: 'Validation failed',
-        data: error.errors,
+        data: error.issues,
       })
     }
     console.error('Error creating complaint:', error)
