@@ -1,0 +1,31 @@
+## Re-Verification Summary for Spec 002: Image Upload
+
+I've completed a strict re-verification of **spec 002** (Image Upload) and verified ALL acceptance criteria:
+
+### Test Results
+✅ All 46 tests pass (including 12 upload-specific tests)
+
+### Verified Acceptance Criteria
+
+1. ✅ `POST /api/upload` accepts multipart images and saves to `public/uploads/` - **Verified in upload.post.ts:58-68**
+2. ✅ Upload returns public URL of saved image - **Verified in upload.post.ts:71-73**
+3. ✅ Unique filenames using UUID - **Verified in upload.post.ts:64** and **test at upload.test.ts:115-137**
+4. ✅ Rejects non-image files (jpg, jpeg, png, webp only) - **Verified in upload.post.ts:34-39** and **tests at upload.test.ts:169-224**
+5. ✅ Rejects files > 5MB - **Verified in upload.post.ts:50-55** and **test at upload.test.ts:181-191**
+6. ✅ `POST /api/complaints` accepts optional imageUrl - **Verified in complaints/index.post.ts:11**
+7. ✅ Complaints without imageUrl work - **Test at upload.test.ts:257-272**
+8. ✅ `GET /api/complaints/:id` returns imageUrl when present - **Test at upload.test.ts:274-303**
+9. ✅ Comprehensive Vitest test coverage - **All 12 upload tests in upload.test.ts**
+10. ✅ No regressions (all Phase 1 tests pass)
+11. ✅ `nuxt build` succeeds with no TypeScript errors - **Build completed successfully**
+
+### Implementation Quality
+- Proper error handling with 400/500 status codes
+- File type validation by both extension and MIME type
+- Secure file storage with UUID-based naming to prevent overwrites
+- Multipart form data handling
+- Complete test coverage including edge cases
+
+**Result:** Spec 002 is legitimately COMPLETE. All acceptance criteria verified and passing.
+
+<promise>DONE</promise>

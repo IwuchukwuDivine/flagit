@@ -2140,7 +2140,22 @@ const plugins = [
 _qBnFp1MhI4nSBRS91ErXoXNj0hGhwdo62D8lW08LFjs
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1d1a9-YzY5ohTMc1HTJ8qRO/h30U20tdM\"",
+    "mtime": "2026-02-12T16:38:35.529Z",
+    "size": 119209,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"73f84-t5Vq8ej3hcntM4VUvqQ27GgviGY\"",
+    "mtime": "2026-02-12T16:38:35.529Z",
+    "size": 475012,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -3264,14 +3279,14 @@ const complaintSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
   category: z.enum(["roads", "water", "electricity", "sanitation"], {
-    errorMap: () => ({ message: "Invalid category" })
+    message: "Invalid category"
   }),
   location: z.string().min(1, "Location is required"),
   imageUrl: z.string().optional()
 });
 const index_post = defineEventHandler(async (event) => {
+  const user = await requireAuth(event);
   try {
-    const user = await requireAuth(event);
     const body = await readBody(event);
     const validated = complaintSchema.parse(body);
     const complaint = await prisma.complaint.create({
@@ -3288,7 +3303,7 @@ const index_post = defineEventHandler(async (event) => {
       throw createError({
         statusCode: 400,
         statusMessage: "Validation failed",
-        data: error.errors
+        data: error.issues
       });
     }
     console.error("Error creating complaint:", error);

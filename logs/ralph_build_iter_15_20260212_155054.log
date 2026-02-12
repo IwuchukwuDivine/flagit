@@ -1,0 +1,26 @@
+Perfect! Let me now cross-reference the test coverage with the acceptance criteria from spec 004:
+
+## Spec 004 Acceptance Criteria Verification:
+
+✅ All criteria are verified:
+
+1. **Users table exists** ✓ - Verified in `prisma/schema.prisma:13-20`
+2. **POST /api/auth/register creates user and returns session** ✓ - Test: `auth.test.ts:29`
+3. **POST /api/auth/register returns 400 for missing fields or duplicate email** ✓ - Tests: `auth.test.ts:61,75,89,104,119`
+4. **POST /api/auth/login authenticates and returns session** ✓ - Test: `auth.test.ts:155`
+5. **POST /api/auth/login returns 401 for invalid credentials** ✓ - Tests: `auth.test.ts:172,184`
+6. **GET /api/auth/me returns authenticated user profile** ✓ - Test: `auth.test.ts:220`
+7. **GET /api/auth/me returns 401 when not authenticated** ✓ - Test: `auth.test.ts:242`
+8. **POST /api/complaints requires authentication** ✓ - Test: `authorization.test.ts:69`
+9. **POST /api/complaints auto-sets authorName and userId** ✓ - Test: `authorization.test.ts:86`
+10. **DELETE /api/complaints/:id only succeeds for author** ✓ - Tests: `authorization.test.ts:149,186`
+11. **Frontend pages exist** ✓ - Verified: `pages/auth/register.vue`, `pages/auth/login.vue`
+12. **Passwords are hashed** ✓ - Verified in `server/utils/auth.ts:27-28` using bcrypt
+13. **Tests cover auth endpoints** ✓ - All 14 tests in `auth.test.ts` passed
+14. **Tests cover authorization** ✓ - All 6 tests in `authorization.test.ts` passed
+15. **All existing tests pass** ✓ - 46/46 tests passed
+16. **nuxt build succeeds** ✓ - Build completed with no errors
+
+All acceptance criteria for spec 004 have been successfully verified. The implementation is complete and working correctly.
+
+<promise>DONE</promise>

@@ -17,14 +17,14 @@ const complaintSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
   category: z.enum(["roads", "water", "electricity", "sanitation"], {
-    errorMap: () => ({ message: "Invalid category" })
+    message: "Invalid category"
   }),
   location: z.string().min(1, "Location is required"),
   imageUrl: z.string().optional()
 });
 const index_post = defineEventHandler(async (event) => {
+  const user = await requireAuth(event);
   try {
-    const user = await requireAuth(event);
     const body = await readBody(event);
     const validated = complaintSchema.parse(body);
     const complaint = await prisma.complaint.create({
@@ -41,7 +41,7 @@ const index_post = defineEventHandler(async (event) => {
       throw createError({
         statusCode: 400,
         statusMessage: "Validation failed",
-        data: error.errors
+        data: error.issues
       });
     }
     console.error("Error creating complaint:", error);

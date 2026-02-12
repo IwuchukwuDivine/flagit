@@ -1,0 +1,39 @@
+Perfect! I have successfully re-verified spec 004 (User Authentication) and confirmed all acceptance criteria are met:
+
+## Re-Verification Summary for Spec 004: User Authentication
+
+**All 18 acceptance criteria verified:**
+
+✅ Database:
+- Users table exists with name, email, hashed password (verified in schema.prisma:13-20)
+- Complaints table has userId foreign key (verified in schema.prisma:31-32)
+- Passwords are hashed with bcrypt, salt rounds = 10 (verified in server/utils/auth.ts:27-28)
+
+✅ Auth API endpoints (14 tests pass):
+- POST /api/auth/register creates user and returns session
+- POST /api/auth/register returns 400 for missing/invalid fields and duplicate email
+- POST /api/auth/login authenticates and returns session
+- POST /api/auth/login returns 401 for invalid credentials
+- GET /api/auth/me returns authenticated user profile
+- GET /api/auth/me returns 401 when not authenticated
+- POST /api/auth/logout clears session
+
+✅ Authorization (6 tests pass):
+- POST /api/complaints requires authentication (401 if not logged in)
+- POST /api/complaints auto-sets authorName and userId from session
+- DELETE /api/complaints/:id only succeeds for the complaint's author (403 otherwise)
+
+✅ Frontend pages:
+- /auth/register and /auth/login pages exist and work
+- /submit redirects to login when not authenticated (middleware: 'auth' verified)
+- Navigation shows login/register when logged out, user name and logout when logged in (verified in layouts/default.vue:55-79)
+- ComplaintForm doesn't have authorName field (auto-populated from session)
+
+✅ Quality checks:
+- All 46 tests pass (including all existing tests from Phases 1-3, no regressions)
+- `nuxt build` succeeds with no TypeScript errors
+- Build output: 2.81 MB (714 kB gzip)
+
+Spec 004 is fully implemented and working correctly!
+
+<promise>DONE</promise>

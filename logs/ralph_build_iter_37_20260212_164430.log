@@ -1,0 +1,31 @@
+Perfect! Build succeeds with no errors. Let me verify all acceptance criteria one more time by checking against the spec:
+
+## Spec 002 Re-Verification Summary:
+
+✅ **POST /api/upload accepts a multipart image and saves it to public/uploads/** - Confirmed in server/api/upload.post.ts:58-68
+
+✅ **Upload response returns the public URL of the saved image** - Confirmed in server/api/upload.post.ts:71-73
+
+✅ **Each uploaded file gets a unique filename (no overwrites)** - Confirmed in server/api/upload.post.ts:64 using randomUUID()
+
+✅ **Upload rejects files that are not jpg, jpeg, png, or webp with 400** - Confirmed in server/api/upload.post.ts:34-47
+
+✅ **Upload rejects files larger than 5MB with 400** - Confirmed in server/api/upload.post.ts:50-55
+
+✅ **POST /api/complaints accepts an optional imageUrl field and stores it** - Confirmed in server/api/complaints/index.post.ts:11 (imageUrl: z.string().optional())
+
+✅ **Complaints created without imageUrl still work as before** - Confirmed in test file tests/api/upload.test.ts:257-272
+
+✅ **GET /api/complaints/:id returns the imageUrl when present** - Confirmed in server/api/complaints/[id].get.ts:27 (returns full complaint object including imageUrl)
+
+✅ **Vitest tests cover the upload endpoint (valid file, invalid type, oversized file)** - Confirmed 12 tests in tests/api/upload.test.ts
+
+✅ **Vitest tests cover complaint creation with and without imageUrl** - Confirmed in tests/api/upload.test.ts:227-304
+
+✅ **All existing Phase 1 tests still pass (no regressions)** - Confirmed: All 46 tests pass
+
+✅ **nuxt build succeeds with no TypeScript errors** - Confirmed: Build completed successfully
+
+All acceptance criteria are met! Spec 002 is verified as complete. All code quality checks pass. Since all 4 specs are complete and I've successfully re-verified spec 002, the project is in a healthy state.
+
+<promise>DONE</promise>

@@ -1,0 +1,31 @@
+Perfect! All test coverage is comprehensive. Let me verify manually that the tests match all acceptance criteria from spec 002:
+
+**Acceptance Criteria Verification for Spec 002:**
+
+✅ `POST /api/upload` accepts a multipart image and saves it to `public/uploads/` - **Test line 94-113**
+✅ Upload response returns the public URL of the saved image - **Test line 107-108**
+✅ Each uploaded file gets a unique filename (no overwrites) - **Test line 115-137**
+✅ Upload rejects files that are not `jpg`, `jpeg`, `png`, or `webp` with 400 - **Tests line 169-179, 202-224**
+✅ Upload rejects files larger than 5MB with 400 - **Test line 181-191**
+✅ `POST /api/complaints` accepts an optional `imageUrl` field and stores it - **Test line 228-255**
+✅ Complaints created without `imageUrl` still work as before - **Test line 257-272**
+✅ `GET /api/complaints/:id` returns the `imageUrl` when present - **Test line 274-303**
+✅ Vitest tests cover the upload endpoint (valid file, invalid type, oversized file) - **All tests present**
+✅ Vitest tests cover complaint creation with and without imageUrl - **Tests line 227-304**
+✅ All existing Phase 1 tests still pass (no regressions) - **Verified by test run output showing 46 tests passing**
+
+All acceptance criteria are fully implemented and tested. The tests all pass, and the build succeeds with no errors.
+
+## Re-Verification Complete
+
+I have successfully re-verified spec 002 (Image Upload). All acceptance criteria are met:
+- Upload endpoint properly validates file types (jpg, jpeg, png, webp only)
+- File size limit of 5MB is enforced
+- Unique filenames using UUID are generated
+- Files are saved to `public/uploads/`
+- Complaint API integration works with optional imageUrl
+- All 46 tests pass (including 12 upload-specific tests)
+- Build succeeds with no TypeScript or ESLint errors
+- No regressions in existing functionality
+
+<promise>DONE</promise>

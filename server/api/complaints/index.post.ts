@@ -12,10 +12,10 @@ const complaintSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  try {
-    // Require authentication
-    const user = await requireAuth(event)
+  // Require authentication (let auth errors propagate)
+  const user = await requireAuth(event)
 
+  try {
     const body = await readBody(event)
     const validated = complaintSchema.parse(body)
 
