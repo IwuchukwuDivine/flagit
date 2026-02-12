@@ -1,4 +1,5 @@
 import { d as defineEventHandler, r as readBody, c as createError } from '../../nitro/nitro.mjs';
+import { r as requireAuth } from '../../_/auth.mjs';
 import { z } from 'zod';
 import { p as prisma } from '../../_/prisma.mjs';
 import 'node:http';
@@ -9,12 +10,12 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import 'bcrypt';
 import '@prisma/client';
 
 const complaintSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
-  authorName: z.string().min(1, "Author name is required"),
   category: z.enum(["roads", "water", "electricity", "sanitation"], {
     errorMap: () => ({ message: "Invalid category" })
   }),
@@ -23,11 +24,14 @@ const complaintSchema = z.object({
 });
 const index_post = defineEventHandler(async (event) => {
   try {
+    const user = await requireAuth(event);
     const body = await readBody(event);
     const validated = complaintSchema.parse(body);
     const complaint = await prisma.complaint.create({
       data: {
         ...validated,
+        authorName: user.name,
+        userId: user.id,
         status: "pending"
       }
     });

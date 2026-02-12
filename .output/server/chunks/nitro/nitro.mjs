@@ -99,7 +99,7 @@ function encodeQueryKey(text) {
 function encodePath(text) {
   return encode(text).replace(HASH_RE, "%23").replace(IM_RE, "%3F").replace(ENC_ENC_SLASH_RE, "%2F").replace(AMPERSAND_RE, "%26").replace(PLUS_RE, "%2B");
 }
-function decode(text = "") {
+function decode$1(text = "") {
   try {
     return decodeURIComponent("" + text);
   } catch {
@@ -107,13 +107,13 @@ function decode(text = "") {
   }
 }
 function decodePath(text) {
-  return decode(text.replace(ENC_SLASH_RE, "%252F"));
+  return decode$1(text.replace(ENC_SLASH_RE, "%252F"));
 }
 function decodeQueryKey(text) {
-  return decode(text.replace(PLUS_RE, " "));
+  return decode$1(text.replace(PLUS_RE, " "));
 }
 function decodeQueryValue(text) {
-  return decode(text.replace(PLUS_RE, " "));
+  return decode$1(text.replace(PLUS_RE, " "));
 }
 
 function parseQuery(parametersString = "") {
@@ -379,6 +379,211 @@ function stringifyParsedURL(parsed) {
   const host = parsed.host || "";
   const proto = parsed.protocol || parsed[protocolRelative] ? (parsed.protocol || "") + "//" : "";
   return proto + auth + host + pathname + search + hash;
+}
+
+function parse$1(str, options) {
+  if (typeof str !== "string") {
+    throw new TypeError("argument str must be a string");
+  }
+  const obj = {};
+  const opt = {};
+  const dec = opt.decode || decode;
+  let index = 0;
+  while (index < str.length) {
+    const eqIdx = str.indexOf("=", index);
+    if (eqIdx === -1) {
+      break;
+    }
+    let endIdx = str.indexOf(";", index);
+    if (endIdx === -1) {
+      endIdx = str.length;
+    } else if (endIdx < eqIdx) {
+      index = str.lastIndexOf(";", eqIdx - 1) + 1;
+      continue;
+    }
+    const key = str.slice(index, eqIdx).trim();
+    if (opt?.filter && !opt?.filter(key)) {
+      index = endIdx + 1;
+      continue;
+    }
+    if (void 0 === obj[key]) {
+      let val = str.slice(eqIdx + 1, endIdx).trim();
+      if (val.codePointAt(0) === 34) {
+        val = val.slice(1, -1);
+      }
+      obj[key] = tryDecode(val, dec);
+    }
+    index = endIdx + 1;
+  }
+  return obj;
+}
+function decode(str) {
+  return str.includes("%") ? decodeURIComponent(str) : str;
+}
+function tryDecode(str, decode2) {
+  try {
+    return decode2(str);
+  } catch {
+    return str;
+  }
+}
+
+const fieldContentRegExp = /^[\u0009\u0020-\u007E\u0080-\u00FF]+$/;
+function serialize$2(name, value, options) {
+  const opt = options || {};
+  const enc = opt.encode || encodeURIComponent;
+  if (typeof enc !== "function") {
+    throw new TypeError("option encode is invalid");
+  }
+  if (!fieldContentRegExp.test(name)) {
+    throw new TypeError("argument name is invalid");
+  }
+  const encodedValue = enc(value);
+  if (encodedValue && !fieldContentRegExp.test(encodedValue)) {
+    throw new TypeError("argument val is invalid");
+  }
+  let str = name + "=" + encodedValue;
+  if (void 0 !== opt.maxAge && opt.maxAge !== null) {
+    const maxAge = opt.maxAge - 0;
+    if (Number.isNaN(maxAge) || !Number.isFinite(maxAge)) {
+      throw new TypeError("option maxAge is invalid");
+    }
+    str += "; Max-Age=" + Math.floor(maxAge);
+  }
+  if (opt.domain) {
+    if (!fieldContentRegExp.test(opt.domain)) {
+      throw new TypeError("option domain is invalid");
+    }
+    str += "; Domain=" + opt.domain;
+  }
+  if (opt.path) {
+    if (!fieldContentRegExp.test(opt.path)) {
+      throw new TypeError("option path is invalid");
+    }
+    str += "; Path=" + opt.path;
+  }
+  if (opt.expires) {
+    if (!isDate(opt.expires) || Number.isNaN(opt.expires.valueOf())) {
+      throw new TypeError("option expires is invalid");
+    }
+    str += "; Expires=" + opt.expires.toUTCString();
+  }
+  if (opt.httpOnly) {
+    str += "; HttpOnly";
+  }
+  if (opt.secure) {
+    str += "; Secure";
+  }
+  if (opt.priority) {
+    const priority = typeof opt.priority === "string" ? opt.priority.toLowerCase() : opt.priority;
+    switch (priority) {
+      case "low": {
+        str += "; Priority=Low";
+        break;
+      }
+      case "medium": {
+        str += "; Priority=Medium";
+        break;
+      }
+      case "high": {
+        str += "; Priority=High";
+        break;
+      }
+      default: {
+        throw new TypeError("option priority is invalid");
+      }
+    }
+  }
+  if (opt.sameSite) {
+    const sameSite = typeof opt.sameSite === "string" ? opt.sameSite.toLowerCase() : opt.sameSite;
+    switch (sameSite) {
+      case true: {
+        str += "; SameSite=Strict";
+        break;
+      }
+      case "lax": {
+        str += "; SameSite=Lax";
+        break;
+      }
+      case "strict": {
+        str += "; SameSite=Strict";
+        break;
+      }
+      case "none": {
+        str += "; SameSite=None";
+        break;
+      }
+      default: {
+        throw new TypeError("option sameSite is invalid");
+      }
+    }
+  }
+  if (opt.partitioned) {
+    str += "; Partitioned";
+  }
+  return str;
+}
+function isDate(val) {
+  return Object.prototype.toString.call(val) === "[object Date]" || val instanceof Date;
+}
+
+function parseSetCookie(setCookieValue, options) {
+  const parts = (setCookieValue || "").split(";").filter((str) => typeof str === "string" && !!str.trim());
+  const nameValuePairStr = parts.shift() || "";
+  const parsed = _parseNameValuePair(nameValuePairStr);
+  const name = parsed.name;
+  let value = parsed.value;
+  try {
+    value = options?.decode === false ? value : (options?.decode || decodeURIComponent)(value);
+  } catch {
+  }
+  const cookie = {
+    name,
+    value
+  };
+  for (const part of parts) {
+    const sides = part.split("=");
+    const partKey = (sides.shift() || "").trimStart().toLowerCase();
+    const partValue = sides.join("=");
+    switch (partKey) {
+      case "expires": {
+        cookie.expires = new Date(partValue);
+        break;
+      }
+      case "max-age": {
+        cookie.maxAge = Number.parseInt(partValue, 10);
+        break;
+      }
+      case "secure": {
+        cookie.secure = true;
+        break;
+      }
+      case "httponly": {
+        cookie.httpOnly = true;
+        break;
+      }
+      case "samesite": {
+        cookie.sameSite = partValue;
+        break;
+      }
+      default: {
+        cookie[partKey] = partValue;
+      }
+    }
+  }
+  return cookie;
+}
+function _parseNameValuePair(nameValuePairStr) {
+  let name = "";
+  let value = "";
+  const nameValueArr = nameValuePairStr.split("=");
+  if (nameValueArr.length > 1) {
+    name = nameValueArr.shift();
+    value = nameValueArr.join("=");
+  } else {
+    value = nameValuePairStr;
+  }
+  return { name, value };
 }
 
 const NODE_TYPES = {
@@ -876,7 +1081,7 @@ function getRouterParams(event, opts = {}) {
   if (opts.decode) {
     params = { ...params };
     for (const key in params) {
-      params[key] = decode(params[key]);
+      params[key] = decode$1(params[key]);
     }
   }
   return params;
@@ -1164,6 +1369,47 @@ function sanitizeStatusCode(statusCode, defaultStatusCode = 200) {
     return defaultStatusCode;
   }
   return statusCode;
+}
+
+function getDistinctCookieKey(name, opts) {
+  return [name, opts.domain || "", opts.path || "/"].join(";");
+}
+
+function parseCookies(event) {
+  return parse$1(event.node.req.headers.cookie || "");
+}
+function getCookie(event, name) {
+  return parseCookies(event)[name];
+}
+function setCookie(event, name, value, serializeOptions = {}) {
+  if (!serializeOptions.path) {
+    serializeOptions = { path: "/", ...serializeOptions };
+  }
+  const newCookie = serialize$2(name, value, serializeOptions);
+  const currentCookies = splitCookiesString(
+    event.node.res.getHeader("set-cookie")
+  );
+  if (currentCookies.length === 0) {
+    event.node.res.setHeader("set-cookie", newCookie);
+    return;
+  }
+  const newCookieKey = getDistinctCookieKey(name, serializeOptions);
+  event.node.res.removeHeader("set-cookie");
+  for (const cookie of currentCookies) {
+    const parsed = parseSetCookie(cookie);
+    const key = getDistinctCookieKey(parsed.name, parsed);
+    if (key === newCookieKey) {
+      continue;
+    }
+    event.node.res.appendHeader("set-cookie", cookie);
+  }
+  event.node.res.appendHeader("set-cookie", newCookie);
+}
+function deleteCookie(event, name, serializeOptions) {
+  setCookie(event, name, "", {
+    ...serializeOptions,
+    maxAge: 0
+  });
 }
 function splitCookiesString(cookiesString) {
   if (Array.isArray(cookiesString)) {
@@ -4184,7 +4430,7 @@ function _expandFromEnv(value) {
 const _inlineRuntimeConfig = {
   "app": {
     "baseURL": "/",
-    "buildId": "8b3bd748-8ddd-4738-b9fa-138cc966b9af",
+    "buildId": "2caa8aed-d265-46b7-92d0-46c7852eae2a",
     "buildAssetsDir": "/_nuxt/",
     "cdnURL": ""
   },
@@ -4643,103 +4889,131 @@ const plugins = [
 ];
 
 const assets = {
-  "/_nuxt/BFVpztAr.js": {
+  "/_nuxt/1RFjHFQo.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"d96-ehCm3oBasUQVizE65nu9wqStG0I\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 3478,
-    "path": "../public/_nuxt/BFVpztAr.js"
-  },
-  "/_nuxt/BLVIQ9my.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1052-EwspdvX45efj/v9TtbHTVQ3ulic\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 4178,
-    "path": "../public/_nuxt/BLVIQ9my.js"
-  },
-  "/_nuxt/C5t0G2FX.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"146-r0O1SbucwvVqXodERLFj6KYY4Og\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 326,
-    "path": "../public/_nuxt/C5t0G2FX.js"
-  },
-  "/_nuxt/C6ro33Bn.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"118b-nk/FlZQFi1OTW1F8RuOCd9PlKcI\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 4491,
-    "path": "../public/_nuxt/C6ro33Bn.js"
-  },
-  "/_nuxt/CUgHxEN-.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1495-fczjV8j4WHw8EY980kfFUyLtLFM\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 5269,
-    "path": "../public/_nuxt/CUgHxEN-.js"
-  },
-  "/_nuxt/Cl7wUBFX.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"2012-Mg01t+bGoqFz254bOPDbd2ifS8M\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 8210,
-    "path": "../public/_nuxt/Cl7wUBFX.js"
-  },
-  "/_nuxt/Cv88kaGg.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"ecf-qOc45Mon26MUcCK21p7ZZyErXVM\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
+    "etag": "\"ecf-GGB36IvA/byG1o7b3OhDxah8l+g\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
     "size": 3791,
-    "path": "../public/_nuxt/Cv88kaGg.js"
+    "path": "../public/_nuxt/1RFjHFQo.js"
   },
-  "/_nuxt/D2DWUOE2.js": {
+  "/_nuxt/BRMk3NeV.js": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"3b28-DC1xRIK+/85fpMlPKWs578U2PyI\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 15144,
-    "path": "../public/_nuxt/D2DWUOE2.js"
+    "etag": "\"d96-TGcgyFYiiQy9nJ5VMZ/2YiWfAvY\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 3478,
+    "path": "../public/_nuxt/BRMk3NeV.js"
   },
-  "/_nuxt/entry.Crq0LEn0.css": {
-    "type": "text/css; charset=utf-8",
-    "etag": "\"3a98-5NGyrHA/Ak42sdbnFu7aph4dAN0\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 15000,
-    "path": "../public/_nuxt/entry.Crq0LEn0.css"
+  "/_nuxt/BZFV-jy-.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"a85-9eknfusbpbbuEJi2wCklIqRUr4o\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 2693,
+    "path": "../public/_nuxt/BZFV-jy-.js"
   },
-  "/_nuxt/error-404._yXoGkXB.css": {
+  "/_nuxt/B_e5nl7m.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"118b-fZ95SbnC2xHgVtQuHNLh1pQAK5k\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 4491,
+    "path": "../public/_nuxt/B_e5nl7m.js"
+  },
+  "/_nuxt/B412Jlrp.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"29dd1-3Rm+UrPtTP+7ro0MMroF1REYP9I\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 171473,
+    "path": "../public/_nuxt/B412Jlrp.js"
+  },
+  "/_nuxt/CRGjWLey.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1052-H2crmoUgxw8Ll0iNZ1lclzGQS3Q\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 4178,
+    "path": "../public/_nuxt/CRGjWLey.js"
+  },
+  "/_nuxt/CxXxvqG7.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"14a3-NMta904UNJlTZoAeWp9WftvH0T4\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 5283,
+    "path": "../public/_nuxt/CxXxvqG7.js"
+  },
+  "/_nuxt/DFxVQoSi.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"ba-lDdZSuyZuUXqMXZbdY+nrOGpmqc\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 186,
+    "path": "../public/_nuxt/DFxVQoSi.js"
+  },
+  "/_nuxt/GE6gVQag.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"899-03W4gWS2g7hE9bR5Drj4DnkZhp8\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 2201,
+    "path": "../public/_nuxt/GE6gVQag.js"
+  },
+  "/_nuxt/CHQtAE7W.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"3b23-JK/liM9p6shP0OTL3p6sd6lc2lA\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 15139,
+    "path": "../public/_nuxt/CHQtAE7W.js"
+  },
+  "/_nuxt/bMahwV_1.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1d15-f1XQAPXi7iyr9dBO9U4TiiyFWZ4\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 7445,
+    "path": "../public/_nuxt/bMahwV_1.js"
+  },
+  "/_nuxt/entry.s4WrndUs.css": {
     "type": "text/css; charset=utf-8",
-    "etag": "\"97e-UvhxUpGzrIO+HDYB4qU9Txgu35A\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 2430,
-    "path": "../public/_nuxt/error-404._yXoGkXB.css"
+    "etag": "\"3ef8-TYDPKHkWJXS9IQUYQTrKgWp1DE8\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 16120,
+    "path": "../public/_nuxt/entry.s4WrndUs.css"
   },
   "/_nuxt/error-500.BENb_mjk.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"773-BFLUend+w1t3SP3QDB+Z0A0V5pI\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
+    "mtime": "2026-02-12T14:12:12.020Z",
     "size": 1907,
     "path": "../public/_nuxt/error-500.BENb_mjk.css"
   },
-  "/_nuxt/D5h3QCEn.js": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"299ca-DY5wC7IXVWNlFZz78qic9w1L4tA\"",
-    "mtime": "2026-02-12T13:58:01.632Z",
-    "size": 170442,
-    "path": "../public/_nuxt/D5h3QCEn.js"
+  "/_nuxt/error-404._yXoGkXB.css": {
+    "type": "text/css; charset=utf-8",
+    "etag": "\"97e-UvhxUpGzrIO+HDYB4qU9Txgu35A\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 2430,
+    "path": "../public/_nuxt/error-404._yXoGkXB.css"
   },
-  "/_nuxt/builds/meta/8b3bd748-8ddd-4738-b9fa-138cc966b9af.json": {
-    "type": "application/json",
-    "etag": "\"58-ZasZJwK47e86NW1DlSqtYrfHKfk\"",
-    "mtime": "2026-02-12T13:58:01.627Z",
-    "size": 88,
-    "path": "../public/_nuxt/builds/meta/8b3bd748-8ddd-4738-b9fa-138cc966b9af.json"
+  "/_nuxt/qbgvcDyP.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"146-51kSF/xeKW5PSONrX+eaPxSAqfA\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 326,
+    "path": "../public/_nuxt/qbgvcDyP.js"
+  },
+  "/_nuxt/yRUIW5vR.js": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"74a-F9hQiArC0/Nx0dwFNyXpgp6cAM4\"",
+    "mtime": "2026-02-12T14:12:12.020Z",
+    "size": 1866,
+    "path": "../public/_nuxt/yRUIW5vR.js"
   },
   "/_nuxt/builds/latest.json": {
     "type": "application/json",
-    "etag": "\"47-xKIl6+yVlBKQhMCVTRuiqXaaL70\"",
-    "mtime": "2026-02-12T13:58:01.628Z",
+    "etag": "\"47-PpOb0egvrXEs+tGNUNRmdlXTxN8\"",
+    "mtime": "2026-02-12T14:12:12.017Z",
     "size": 71,
     "path": "../public/_nuxt/builds/latest.json"
+  },
+  "/_nuxt/builds/meta/2caa8aed-d265-46b7-92d0-46c7852eae2a.json": {
+    "type": "application/json",
+    "etag": "\"58-YAoGsWz0+P5eEiBrAU2Am4zGBnU\"",
+    "mtime": "2026-02-12T14:12:12.016Z",
+    "size": 88,
+    "path": "../public/_nuxt/builds/meta/2caa8aed-d265-46b7-92d0-46c7852eae2a.json"
   }
 };
 
@@ -4935,6 +5209,10 @@ const _KXkssT = eventHandler((event) => {
 
 const _SxA8c9 = defineEventHandler(() => {});
 
+const _lazy_1NYYS7 = () => import('../routes/api/auth/login.post.mjs');
+const _lazy_3TcghG = () => import('../routes/api/auth/logout.post.mjs');
+const _lazy_J5ASId = () => import('../routes/api/auth/me.get.mjs');
+const _lazy_0AvRfJ = () => import('../routes/api/auth/register.post.mjs');
 const _lazy_sRfWRR = () => import('../routes/api/complaints/_id_.delete.mjs');
 const _lazy_S0pg09 = () => import('../routes/api/complaints/_id_.get.mjs');
 const _lazy_AsW1Xi = () => import('../routes/api/index.get.mjs');
@@ -4944,6 +5222,10 @@ const _lazy_7CVTns = () => import('../routes/renderer.mjs').then(function (n) { 
 
 const handlers = [
   { route: '', handler: _KXkssT, lazy: false, middleware: true, method: undefined },
+  { route: '/api/auth/login', handler: _lazy_1NYYS7, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/logout', handler: _lazy_3TcghG, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/me', handler: _lazy_J5ASId, lazy: true, middleware: false, method: "get" },
+  { route: '/api/auth/register', handler: _lazy_0AvRfJ, lazy: true, middleware: false, method: "post" },
   { route: '/api/complaints/:id', handler: _lazy_sRfWRR, lazy: true, middleware: false, method: "delete" },
   { route: '/api/complaints/:id', handler: _lazy_S0pg09, lazy: true, middleware: false, method: "get" },
   { route: '/api/complaints', handler: _lazy_AsW1Xi, lazy: true, middleware: false, method: "get" },
@@ -5406,5 +5688,5 @@ trapUnhandledNodeErrors();
 setupGracefulShutdown(listener, nitroApp);
 const nodeServer = {};
 
-export { $fetch as $, hash$1 as A, parseQuery as B, withTrailingSlash as C, withoutTrailingSlash as D, nodeServer as E, readMultipartFormData as a, getResponseStatusText as b, createError$1 as c, defineEventHandler as d, getResponseStatus as e, defineRenderHandler as f, getRouterParam as g, getQuery as h, destr as i, joinRelativeURL as j, getRouteRules as k, joinURL as l, useNitroApp as m, encodePath as n, decodePath as o, parseURL as p, hasProtocol as q, readBody as r, isScriptProtocol as s, sanitizeStatusCode as t, useRuntimeConfig as u, getContext as v, withQuery as w, createHooks as x, executeAsync as y, defu as z };
+export { $fetch as $, createHooks as A, executeAsync as B, defu as C, hash$1 as D, parseQuery as E, withTrailingSlash as F, withoutTrailingSlash as G, nodeServer as H, deleteCookie as a, getCookie as b, createError$1 as c, defineEventHandler as d, readMultipartFormData as e, getResponseStatusText as f, getRouterParam as g, getResponseStatus as h, defineRenderHandler as i, joinRelativeURL as j, getQuery as k, destr as l, getRouteRules as m, joinURL as n, useNitroApp as o, parseURL as p, encodePath as q, readBody as r, setCookie as s, decodePath as t, useRuntimeConfig as u, hasProtocol as v, isScriptProtocol as w, withQuery as x, sanitizeStatusCode as y, getContext as z };
 //# sourceMappingURL=nitro.mjs.map

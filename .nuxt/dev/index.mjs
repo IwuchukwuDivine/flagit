@@ -1,12 +1,13 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readMultipartFormData, getResponseStatusText } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, clearSession, getSession, readMultipartFormData, getResponseStatusText } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto, { randomUUID } from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/@vue/shared/dist/shared.cjs.js';
-import { z } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/zod/index.js';
 import { PrismaClient } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/@prisma/client/default.js';
+import { z } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/zod/index.js';
+import bcrypt from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/bcrypt/bcrypt.js';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { promises, existsSync } from 'node:fs';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/vue-bundle-renderer/dist/runtime.mjs';
@@ -2139,7 +2140,22 @@ const plugins = [
 _qBnFp1MhI4nSBRS91ErXoXNj0hGhwdo62D8lW08LFjs
 ];
 
-const assets = {};
+const assets = {
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1d033-zyeIxG30grVlAEbCk06T61EbhtU\"",
+    "mtime": "2026-02-12T14:03:52.023Z",
+    "size": 118835,
+    "path": "index.mjs"
+  },
+  "/index.mjs.map": {
+    "type": "application/json",
+    "etag": "\"733f4-92v1JB3bQymVzjZe34w0o+ccN7o\"",
+    "mtime": "2026-02-12T14:03:52.023Z",
+    "size": 472052,
+    "path": "index.mjs.map"
+  }
+};
 
 function readAsset (id) {
   const serverDir = dirname$1(fileURLToPath(globalThis._importMeta_.url));
@@ -2587,6 +2603,10 @@ async function getIslandContext(event) {
 	return ctx;
 }
 
+const _lazy_1NYYS7 = () => Promise.resolve().then(function () { return login_post$1; });
+const _lazy_3TcghG = () => Promise.resolve().then(function () { return logout_post$1; });
+const _lazy_J5ASId = () => Promise.resolve().then(function () { return me_get$1; });
+const _lazy_0AvRfJ = () => Promise.resolve().then(function () { return register_post$1; });
 const _lazy_sRfWRR = () => Promise.resolve().then(function () { return _id__delete$1; });
 const _lazy_S0pg09 = () => Promise.resolve().then(function () { return _id__get$1; });
 const _lazy_AsW1Xi = () => Promise.resolve().then(function () { return index_get$1; });
@@ -2596,6 +2616,10 @@ const _lazy_7CVTns = () => Promise.resolve().then(function () { return renderer$
 
 const handlers = [
   { route: '', handler: _KXkssT, lazy: false, middleware: true, method: undefined },
+  { route: '/api/auth/login', handler: _lazy_1NYYS7, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/logout', handler: _lazy_3TcghG, lazy: true, middleware: false, method: "post" },
+  { route: '/api/auth/me', handler: _lazy_J5ASId, lazy: true, middleware: false, method: "get" },
+  { route: '/api/auth/register', handler: _lazy_0AvRfJ, lazy: true, middleware: false, method: "post" },
   { route: '/api/complaints/:id', handler: _lazy_sRfWRR, lazy: true, middleware: false, method: "delete" },
   { route: '/api/complaints/:id', handler: _lazy_S0pg09, lazy: true, middleware: false, method: "get" },
   { route: '/api/complaints', handler: _lazy_AsW1Xi, lazy: true, middleware: false, method: "get" },
@@ -2943,6 +2967,175 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
+async function hashPassword(password) {
+  return bcrypt.hash(password, 10);
+}
+async function verifyPassword(password, hash) {
+  return bcrypt.compare(password, hash);
+}
+async function setUserSession(event, user) {
+  await setSession(event, {
+    user
+  });
+}
+async function getUserSession(event) {
+  const session = await getSession(event);
+  return (session == null ? void 0 : session.user) || null;
+}
+async function clearUserSession(event) {
+  await clearSession(event);
+}
+async function requireAuth(event) {
+  const user = await getUserSession(event);
+  if (!user) {
+    throw createError({
+      statusCode: 401,
+      message: "Authentication required"
+    });
+  }
+  return user;
+}
+
+const prisma$2 = new PrismaClient();
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required")
+});
+const login_post = defineEventHandler(async (event) => {
+  try {
+    const body = await readBody(event);
+    const data = loginSchema.parse(body);
+    const user = await prisma$2.user.findUnique({
+      where: { email: data.email }
+    });
+    if (!user) {
+      throw createError({
+        statusCode: 401,
+        message: "Invalid email or password"
+      });
+    }
+    const isValid = await verifyPassword(data.password, user.password);
+    if (!isValid) {
+      throw createError({
+        statusCode: 401,
+        message: "Invalid email or password"
+      });
+    }
+    await setUserSession(event, {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    });
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
+      }
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        message: error.errors[0].message
+      });
+    }
+    throw error;
+  }
+});
+
+const login_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: login_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const logout_post = defineEventHandler(async (event) => {
+  await clearUserSession(event);
+  return {
+    success: true
+  };
+});
+
+const logout_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: logout_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const me_get = defineEventHandler(async (event) => {
+  const user = await requireAuth(event);
+  return {
+    user
+  };
+});
+
+const me_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: me_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const prisma$1 = new PrismaClient();
+const registerSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters")
+});
+const register_post = defineEventHandler(async (event) => {
+  try {
+    const body = await readBody(event);
+    const data = registerSchema.parse(body);
+    const existingUser = await prisma$1.user.findUnique({
+      where: { email: data.email }
+    });
+    if (existingUser) {
+      throw createError({
+        statusCode: 400,
+        message: "Email already registered"
+      });
+    }
+    const hashedPassword = await hashPassword(data.password);
+    const user = await prisma$1.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: hashedPassword
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true
+      }
+    });
+    await setUserSession(event, {
+      id: user.id,
+      name: user.name,
+      email: user.email
+    });
+    return {
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt
+      }
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        message: error.errors[0].message
+      });
+    }
+    throw error;
+  }
+});
+
+const register_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: register_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
 var _a;
 const prismaClientSingleton = () => {
   return new PrismaClient();
@@ -2952,6 +3145,7 @@ globalThis.prismaGlobal = prisma;
 
 const _id__delete = defineEventHandler(async (event) => {
   try {
+    const user = await requireAuth(event);
     const id = getRouterParam(event, "id");
     if (!id || isNaN(Number(id))) {
       throw createError({
@@ -2968,6 +3162,12 @@ const _id__delete = defineEventHandler(async (event) => {
       throw createError({
         statusCode: 404,
         statusMessage: "Complaint not found"
+      });
+    }
+    if (complaint.userId !== user.id) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: "You can only delete your own complaints"
       });
     }
     await prisma.complaint.delete({
@@ -3056,7 +3256,6 @@ const index_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
 const complaintSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
-  authorName: z.string().min(1, "Author name is required"),
   category: z.enum(["roads", "water", "electricity", "sanitation"], {
     errorMap: () => ({ message: "Invalid category" })
   }),
@@ -3065,11 +3264,14 @@ const complaintSchema = z.object({
 });
 const index_post = defineEventHandler(async (event) => {
   try {
+    const user = await requireAuth(event);
     const body = await readBody(event);
     const validated = complaintSchema.parse(body);
     const complaint = await prisma.complaint.create({
       data: {
         ...validated,
+        authorName: user.name,
+        userId: user.id,
         status: "pending"
       }
     });

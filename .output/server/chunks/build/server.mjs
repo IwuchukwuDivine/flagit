@@ -1,5 +1,5 @@
 import process from 'node:process';globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import { hasInjectionContext, inject, getCurrentInstance, defineComponent, ref, h, Suspense, Fragment, createApp, provide, shallowReactive, onErrorCaptured, onServerPrefetch, unref, createVNode, resolveDynamicComponent, reactive, effectScope, defineAsyncComponent, mergeProps, getCurrentScope, toRef, shallowRef, isReadonly, useSSRContext, isRef, isShallow, isReactive, toRaw } from 'vue';
-import { c as createError$1, p as parseURL, n as encodePath, o as decodePath, q as hasProtocol, s as isScriptProtocol, l as joinURL, w as withQuery, t as sanitizeStatusCode, v as getContext, $ as $fetch, x as createHooks, y as executeAsync, z as defu } from '../nitro/nitro.mjs';
+import { c as createError$1, p as parseURL, q as encodePath, t as decodePath, v as hasProtocol, w as isScriptProtocol, n as joinURL, x as withQuery, y as sanitizeStatusCode, z as getContext, $ as $fetch, A as createHooks, B as executeAsync, C as defu } from '../nitro/nitro.mjs';
 import { b as baseURL } from '../routes/renderer.mjs';
 import { RouterView, createMemoryHistory, createRouter, START_LOCATION } from 'vue-router';
 import { ssrRenderSuspense, ssrRenderComponent, ssrRenderVNode, ssrRenderAttrs } from 'vue/server-renderer';
@@ -413,7 +413,18 @@ const _routes = [
   {
     name: "submit",
     path: "/submit",
-    component: () => import('./submit-ujdh6IwG.mjs')
+    meta: { "middleware": "auth" },
+    component: () => import('./submit-Dv_oDnPr.mjs')
+  },
+  {
+    name: "auth-login",
+    path: "/auth/login",
+    component: () => import('./login-CdLc4twd.mjs')
+  },
+  {
+    name: "auth-register",
+    path: "/auth/register",
+    component: () => import('./register-DR8BgTCR.mjs')
   },
   {
     name: "complaints-id",
@@ -537,7 +548,9 @@ const globalMiddleware = [
   validate,
   manifest_45route_45rule
 ];
-const namedMiddleware = {};
+const namedMiddleware = {
+  auth: () => import('./auth-DTDx5Z2Z.mjs')
+};
 const plugin = /* @__PURE__ */ defineNuxtPlugin({
   name: "nuxt:router",
   enforce: "pre",
@@ -963,5 +976,5 @@ let entry;
 }
 const entry_default = ((ssrContext) => entry(ssrContext));
 
-export { _export_sfc as _, useRoute as a, asyncDataDefaults as b, createError as c, useRouter as d, entry_default as default, encodeRoutePath as e, fetchDefaults as f, useRuntimeConfig as g, nuxtLinkDefaults as h, navigateTo as n, resolveRouteObject as r, useNuxtApp as u };
+export { _export_sfc as _, useRoute as a, asyncDataDefaults as b, createError as c, useRouter as d, entry_default as default, encodeRoutePath as e, fetchDefaults as f, useRuntimeConfig as g, nuxtLinkDefaults as h, defineNuxtRouteMiddleware as i, navigateTo as n, resolveRouteObject as r, useNuxtApp as u };
 //# sourceMappingURL=server.mjs.map

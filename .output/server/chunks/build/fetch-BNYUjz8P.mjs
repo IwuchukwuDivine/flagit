@@ -1,6 +1,6 @@
 import { computed, toValue, reactive, getCurrentInstance, onServerPrefetch, defineComponent, mergeProps, unref, ref, shallowRef, nextTick, toRef, useSSRContext, createElementBlock, provide, cloneVNode, h } from 'vue';
 import { ssrRenderAttrs, ssrInterpolate } from 'vue/server-renderer';
-import { A as hash } from '../nitro/nitro.mjs';
+import { D as hash } from '../nitro/nitro.mjs';
 import { isPlainObject } from '@vue/shared';
 import { f as fetchDefaults, u as useNuxtApp, b as asyncDataDefaults, c as createError } from './server.mjs';
 import { debounce } from 'perfect-debounce';

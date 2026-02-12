@@ -10,13 +10,33 @@ describe('Upload API', async () => {
     server: true,
   })
 
+  let testUserId: number
+
   beforeAll(async () => {
-    // Database schema should already exist from Prisma
+    // Create a test user for auth-required operations
+    const userResponse = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      },
+    })
+    testUserId = userResponse.user.id
   })
 
   beforeEach(async () => {
-    // Clean up database before each test
+    // Clean up complaints before each test
     await prisma.complaint.deleteMany()
+
+    // Ensure we're logged in for tests that need auth
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        email: 'test@example.com',
+        password: 'password123',
+      },
+    })
   })
 
   afterAll(async () => {
@@ -27,6 +47,7 @@ describe('Upload API', async () => {
     }
     // Clean up database
     await prisma.complaint.deleteMany()
+    await prisma.user.deleteMany()
     await prisma.$disconnect()
   })
 
@@ -203,7 +224,6 @@ describe('Upload API', async () => {
       const complaintData = {
         title: 'Broken road with photo',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
         location: 'Main Street',
         imageUrl: uploadResponse.url,
@@ -222,7 +242,6 @@ describe('Upload API', async () => {
       const complaintData = {
         title: 'Broken road without photo',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
         location: 'Main Street',
       }
@@ -251,7 +270,6 @@ describe('Upload API', async () => {
       const complaintData = {
         title: 'Broken road with photo',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
         location: 'Main Street',
         imageUrl: uploadResponse.url,

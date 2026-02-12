@@ -7,18 +7,39 @@ describe('Complaints API', async () => {
     server: true,
   })
 
+  let testUserId: number
+
   beforeAll(async () => {
-    // Database schema should already exist from Prisma
+    // Create a test user for auth-required operations
+    const userResponse = await $fetch('/api/auth/register', {
+      method: 'POST',
+      body: {
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'password123',
+      },
+    })
+    testUserId = userResponse.user.id
   })
 
   beforeEach(async () => {
-    // Clean up database before each test
+    // Clean up complaints before each test
     await prisma.complaint.deleteMany()
+
+    // Ensure we're logged in for tests that need auth
+    await $fetch('/api/auth/login', {
+      method: 'POST',
+      body: {
+        email: 'test@example.com',
+        password: 'password123',
+      },
+    })
   })
 
   afterAll(async () => {
     // Clean up after all tests
     await prisma.complaint.deleteMany()
+    await prisma.user.deleteMany()
     await prisma.$disconnect()
   })
 
@@ -27,7 +48,6 @@ describe('Complaints API', async () => {
       const complaintData = {
         title: 'Broken road',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
         location: 'Main Street',
       }
@@ -41,7 +61,8 @@ describe('Complaints API', async () => {
       expect(response.id).toBeDefined()
       expect(response.title).toBe(complaintData.title)
       expect(response.body).toBe(complaintData.body)
-      expect(response.authorName).toBe(complaintData.authorName)
+      expect(response.authorName).toBe('Test User') // Auto-set from session
+      expect(response.userId).toBe(testUserId) // Auto-set from session
       expect(response.category).toBe(complaintData.category)
       expect(response.location).toBe(complaintData.location)
       expect(response.status).toBe('pending')
@@ -52,7 +73,6 @@ describe('Complaints API', async () => {
     it('returns 400 if title is missing', async () => {
       const complaintData = {
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
         location: 'Main Street',
       }
@@ -66,21 +86,6 @@ describe('Complaints API', async () => {
     it('returns 400 if body is missing', async () => {
       const complaintData = {
         title: 'Broken road',
-        authorName: 'John Doe',
-        category: 'roads',
-        location: 'Main Street',
-      }
-
-      await expect($fetch('/api/complaints', {
-        method: 'POST',
-        body: complaintData,
-      })).rejects.toThrow()
-    })
-
-    it('returns 400 if authorName is missing', async () => {
-      const complaintData = {
-        title: 'Broken road',
-        body: 'There is a large pothole on Main Street',
         category: 'roads',
         location: 'Main Street',
       }
@@ -95,7 +100,6 @@ describe('Complaints API', async () => {
       const complaintData = {
         title: 'Broken road',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         location: 'Main Street',
       }
 
@@ -109,7 +113,6 @@ describe('Complaints API', async () => {
       const complaintData = {
         title: 'Broken road',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'roads',
       }
 
@@ -123,7 +126,6 @@ describe('Complaints API', async () => {
       const complaintData = {
         title: 'Broken road',
         body: 'There is a large pothole on Main Street',
-        authorName: 'John Doe',
         category: 'invalid-category',
         location: 'Main Street',
       }
@@ -137,14 +139,15 @@ describe('Complaints API', async () => {
 
   describe('GET /api/complaints', () => {
     it('returns all complaints sorted by newest first', async () => {
-      // Create multiple complaints
+      // Create multiple complaints with the test user
       const complaint1 = await prisma.complaint.create({
         data: {
           title: 'First complaint',
           body: 'First body',
-          authorName: 'John Doe',
+          authorName: 'Test User',
           category: 'roads',
           location: 'Location 1',
+          userId: testUserId,
         },
       })
 
@@ -155,9 +158,10 @@ describe('Complaints API', async () => {
         data: {
           title: 'Second complaint',
           body: 'Second body',
-          authorName: 'Jane Doe',
+          authorName: 'Test User',
           category: 'water',
           location: 'Location 2',
+          userId: testUserId,
         },
       })
 
@@ -186,9 +190,10 @@ describe('Complaints API', async () => {
         data: {
           title: 'Test complaint',
           body: 'Test body',
-          authorName: 'John Doe',
+          authorName: 'Test User',
           category: 'roads',
           location: 'Test location',
+          userId: testUserId,
         },
       })
 
@@ -215,9 +220,10 @@ describe('Complaints API', async () => {
         data: {
           title: 'Test complaint',
           body: 'Test body',
-          authorName: 'John Doe',
+          authorName: 'Test User',
           category: 'roads',
           location: 'Test location',
+          userId: testUserId,
         },
       })
 

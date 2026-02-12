@@ -54,3 +54,13 @@
 [0;35m════════════════════ LOOP 4 ════════════════════[0m
 [0;34m[2026-02-12 14:52:50][0m Starting iteration 4
 
+
+[0;32m✓ Claude execution completed[0m
+[0;32m✓ Completion signal detected: <promise>DONE</promise>[0m
+[0;32m✓ Task completed successfully![0m
+
+[0;34mWaiting 2s before next iteration...[0m
+
+[0;35m════════════════════ LOOP 5 ════════════════════[0m
+[0;34m[2026-02-12 15:00:32][0m Starting iteration 5
+

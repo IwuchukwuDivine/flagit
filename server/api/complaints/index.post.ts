@@ -4,7 +4,6 @@ import prisma from '~/server/utils/prisma'
 const complaintSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   body: z.string().min(1, 'Body is required'),
-  authorName: z.string().min(1, 'Author name is required'),
   category: z.enum(['roads', 'water', 'electricity', 'sanitation'], {
     errorMap: () => ({ message: 'Invalid category' }),
   }),
@@ -14,12 +13,17 @@ const complaintSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   try {
+    // Require authentication
+    const user = await requireAuth(event)
+
     const body = await readBody(event)
     const validated = complaintSchema.parse(body)
 
     const complaint = await prisma.complaint.create({
       data: {
         ...validated,
+        authorName: user.name,
+        userId: user.id,
         status: 'pending',
       },
     })

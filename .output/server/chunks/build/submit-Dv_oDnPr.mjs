@@ -1,7 +1,6 @@
 import { _ as __nuxt_component_0$1 } from './nuxt-link-Dh3vRL2d.mjs';
-import { mergeProps, withCtx, openBlock, createBlock, createVNode, defineComponent, ref, reactive, unref, createTextVNode, useSSRContext } from 'vue';
+import { defineComponent, mergeProps, withCtx, openBlock, createBlock, createVNode, ref, reactive, unref, createTextVNode, useSSRContext } from 'vue';
 import { ssrRenderAttrs, ssrRenderComponent, ssrInterpolate, ssrRenderAttr, ssrRenderClass, ssrIncludeBooleanAttr, ssrLooseContain, ssrLooseEqual, ssrRenderList } from 'vue/server-renderer';
-import { _ as _export_sfc } from './server.mjs';
 import '../nitro/nitro.mjs';
 import 'node:http';
 import 'node:https';
@@ -11,6 +10,7 @@ import 'node:fs';
 import 'node:path';
 import 'node:crypto';
 import 'node:url';
+import './server.mjs';
 import '../routes/renderer.mjs';
 import 'vue-bundle-renderer/runtime';
 import 'unhead/server';
@@ -66,14 +66,12 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
     const formData = reactive({
       title: "",
       body: "",
-      authorName: "",
       category: "",
       location: ""
     });
     const errors = reactive({
       title: "",
       body: "",
-      authorName: "",
       category: "",
       location: "",
       general: ""
@@ -103,12 +101,6 @@ const _sfc_main$1 = /* @__PURE__ */ defineComponent({
       _push(`</div><div><label for="body" class="block text-sm font-medium text-gray-700 mb-2"> Description <span class="text-red-500">*</span></label><textarea id="body" rows="5" class="${ssrRenderClass([{ "border-red-500": unref(errors).body }, "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"])}" placeholder="Detailed description of the complaint">${ssrInterpolate(unref(formData).body)}</textarea>`);
       if (unref(errors).body) {
         _push(`<p class="mt-1 text-sm text-red-600">${ssrInterpolate(unref(errors).body)}</p>`);
-      } else {
-        _push(`<!---->`);
-      }
-      _push(`</div><div><label for="authorName" class="block text-sm font-medium text-gray-700 mb-2"> Your Name <span class="text-red-500">*</span></label><input id="authorName"${ssrRenderAttr("value", unref(formData).authorName)} type="text" class="${ssrRenderClass([{ "border-red-500": unref(errors).authorName }, "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"])}" placeholder="Your full name">`);
-      if (unref(errors).authorName) {
-        _push(`<p class="mt-1 text-sm text-red-600">${ssrInterpolate(unref(errors).authorName)}</p>`);
       } else {
         _push(`<!---->`);
       }
@@ -160,49 +152,53 @@ _sfc_main$1.setup = (props, ctx) => {
   return _sfc_setup$1 ? _sfc_setup$1(props, ctx) : void 0;
 };
 const __nuxt_component_1 = Object.assign(_sfc_main$1, { __name: "ComplaintForm" });
-const _sfc_main = {};
-function _sfc_ssrRender(_ctx, _push, _parent, _attrs) {
-  const _component_NuxtLink = __nuxt_component_0$1;
-  const _component_ComplaintForm = __nuxt_component_1;
-  _push(`<div${ssrRenderAttrs(mergeProps({ class: "min-h-screen" }, _attrs))}><header class="bg-white shadow-sm"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"><div class="flex items-center gap-4">`);
-  _push(ssrRenderComponent(_component_NuxtLink, {
-    to: "/",
-    class: "text-gray-600 hover:text-gray-900 transition-colors"
-  }, {
-    default: withCtx((_, _push2, _parent2, _scopeId) => {
-      if (_push2) {
-        _push2(`<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"${_scopeId}></path></svg>`);
-      } else {
-        return [
-          (openBlock(), createBlock("svg", {
-            class: "w-6 h-6",
-            fill: "none",
-            stroke: "currentColor",
-            viewBox: "0 0 24 24"
-          }, [
-            createVNode("path", {
-              "stroke-linecap": "round",
-              "stroke-linejoin": "round",
-              "stroke-width": "2",
-              d: "M10 19l-7-7m0 0l7-7m-7 7h18"
-            })
-          ]))
-        ];
-      }
-    }),
-    _: 1
-  }, _parent));
-  _push(`<div><h1 class="text-3xl font-bold text-gray-900">Submit Complaint</h1><p class="text-gray-600 mt-1">Report a civic issue in your community</p></div></div></div></header><main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><div class="bg-white shadow-md rounded-lg p-6 md:p-8">`);
-  _push(ssrRenderComponent(_component_ComplaintForm, null, null, _parent));
-  _push(`</div></main></div>`);
-}
+const _sfc_main = /* @__PURE__ */ defineComponent({
+  __name: "submit",
+  __ssrInlineRender: true,
+  setup(__props) {
+    return (_ctx, _push, _parent, _attrs) => {
+      const _component_NuxtLink = __nuxt_component_0$1;
+      const _component_ComplaintForm = __nuxt_component_1;
+      _push(`<div${ssrRenderAttrs(mergeProps({ class: "min-h-screen" }, _attrs))}><header class="bg-white shadow-sm"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"><div class="flex items-center gap-4">`);
+      _push(ssrRenderComponent(_component_NuxtLink, {
+        to: "/",
+        class: "text-gray-600 hover:text-gray-900 transition-colors"
+      }, {
+        default: withCtx((_, _push2, _parent2, _scopeId) => {
+          if (_push2) {
+            _push2(`<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"${_scopeId}><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"${_scopeId}></path></svg>`);
+          } else {
+            return [
+              (openBlock(), createBlock("svg", {
+                class: "w-6 h-6",
+                fill: "none",
+                stroke: "currentColor",
+                viewBox: "0 0 24 24"
+              }, [
+                createVNode("path", {
+                  "stroke-linecap": "round",
+                  "stroke-linejoin": "round",
+                  "stroke-width": "2",
+                  d: "M10 19l-7-7m0 0l7-7m-7 7h18"
+                })
+              ]))
+            ];
+          }
+        }),
+        _: 1
+      }, _parent));
+      _push(`<div><h1 class="text-3xl font-bold text-gray-900">Submit Complaint</h1><p class="text-gray-600 mt-1">Report a civic issue in your community</p></div></div></div></header><main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8"><div class="bg-white shadow-md rounded-lg p-6 md:p-8">`);
+      _push(ssrRenderComponent(_component_ComplaintForm, null, null, _parent));
+      _push(`</div></main></div>`);
+    };
+  }
+});
 const _sfc_setup = _sfc_main.setup;
 _sfc_main.setup = (props, ctx) => {
   const ssrContext = useSSRContext();
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("pages/submit.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
-const submit = /* @__PURE__ */ _export_sfc(_sfc_main, [["ssrRender", _sfc_ssrRender]]);
 
-export { submit as default };
-//# sourceMappingURL=submit-ujdh6IwG.mjs.map
+export { _sfc_main as default };
+//# sourceMappingURL=submit-Dv_oDnPr.mjs.map

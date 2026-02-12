@@ -4,7 +4,6 @@ const imageUploadRef = ref<{ selectedFile: Ref<File | null>; clearSelection: () 
 const formData = reactive({
   title: '',
   body: '',
-  authorName: '',
   category: '',
   location: '',
 })
@@ -12,7 +11,6 @@ const formData = reactive({
 const errors = reactive({
   title: '',
   body: '',
-  authorName: '',
   category: '',
   location: '',
   general: '',
@@ -30,7 +28,6 @@ const categories = [
 const clearErrors = () => {
   errors.title = ''
   errors.body = ''
-  errors.authorName = ''
   errors.category = ''
   errors.location = ''
   errors.general = ''
@@ -47,11 +44,6 @@ const validateForm = (): boolean => {
 
   if (!formData.body.trim()) {
     errors.body = 'Description is required'
-    isValid = false
-  }
-
-  if (!formData.authorName.trim()) {
-    errors.authorName = 'Your name is required'
     isValid = false
   }
 
@@ -98,7 +90,6 @@ const handleSubmit = async () => {
       body: {
         title: formData.title,
         body: formData.body,
-        authorName: formData.authorName,
         category: formData.category,
         location: formData.location,
         imageUrl,
@@ -108,7 +99,6 @@ const handleSubmit = async () => {
     // Reset form
     formData.title = ''
     formData.body = ''
-    formData.authorName = ''
     formData.category = ''
     formData.location = ''
     imageUploadRef.value?.clearSelection()
@@ -161,23 +151,6 @@ const handleSubmit = async () => {
       />
       <p v-if="errors.body" class="mt-1 text-sm text-red-600">
         {{ errors.body }}
-      </p>
-    </div>
-
-    <div>
-      <label for="authorName" class="block text-sm font-medium text-gray-700 mb-2">
-        Your Name <span class="text-red-500">*</span>
-      </label>
-      <input
-        id="authorName"
-        v-model="formData.authorName"
-        type="text"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        :class="{ 'border-red-500': errors.authorName }"
-        placeholder="Your full name"
-      />
-      <p v-if="errors.authorName" class="mt-1 text-sm text-red-600">
-        {{ errors.authorName }}
       </p>
     </div>
 

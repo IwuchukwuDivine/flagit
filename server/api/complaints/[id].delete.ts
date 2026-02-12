@@ -2,6 +2,9 @@ import prisma from '~/server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
   try {
+    // Require authentication
+    const user = await requireAuth(event)
+
     const id = getRouterParam(event, 'id')
 
     if (!id || isNaN(Number(id))) {
@@ -21,6 +24,14 @@ export default defineEventHandler(async (event) => {
       throw createError({
         statusCode: 404,
         statusMessage: 'Complaint not found',
+      })
+    }
+
+    // Check if the user is the author
+    if (complaint.userId !== user.id) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'You can only delete your own complaints',
       })
     }
 
