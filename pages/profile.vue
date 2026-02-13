@@ -79,13 +79,10 @@ async function logout() {
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto px-5 py-8">
-    <!-- Back -->
-    <NuxtLink to="/" class="btn-ghost -ml-3 mb-6 inline-flex text-white/40">
-      <AppIcon name="chevron-left" :size="16" />
-      Back to feed
-    </NuxtLink>
+  <div>
+    <AppHeader title="Profile" to="/" />
 
+    <div class="max-w-2xl mx-auto px-5 py-8">
     <!-- Profile Header -->
     <div class="card p-6 mb-6">
       <div class="flex items-center gap-4 mb-6">
@@ -168,6 +165,7 @@ async function logout() {
           @like="handleLike"
         />
       </div>
+    </div>
     </div>
   </div>
 </template>
