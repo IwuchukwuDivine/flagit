@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import bcrypt from 'bcrypt'
+import { createHmac } from 'crypto'
 import { setCookie, getCookie, deleteCookie } from 'h3'
 
 export interface SessionUser {
@@ -8,16 +9,37 @@ export interface SessionUser {
   email: string
 }
 
-const SESSION_COOKIE_NAME = 'speak-up-session'
+const SESSION_COOKIE_NAME = 'flagit-session'
 
-// Simple encode/decode for session data (in production, use proper encryption/signing)
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET environment variable is required in production')
+  }
+  return secret || 'dev-fallback-secret-not-for-production'
+}
+
+function sign(payload: string): string {
+  const hmac = createHmac('sha256', getSessionSecret())
+  return hmac.update(payload).digest('hex')
+}
+
 function encodeSession(user: SessionUser): string {
-  return Buffer.from(JSON.stringify(user)).toString('base64')
+  const payload = Buffer.from(JSON.stringify(user)).toString('base64')
+  const signature = sign(payload)
+  return `${payload}.${signature}`
 }
 
 function decodeSession(encoded: string): SessionUser | null {
   try {
-    const json = Buffer.from(encoded, 'base64').toString('utf-8')
+    const [payload, signature] = encoded.split('.')
+    if (!payload || !signature) return null
+
+    // Verify signature
+    const expected = sign(payload)
+    if (signature !== expected) return null
+
+    const json = Buffer.from(payload, 'base64').toString('utf-8')
     return JSON.parse(json)
   } catch {
     return null

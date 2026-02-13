@@ -1,96 +1,88 @@
 <script setup lang="ts">
-import type { Ref } from 'vue'
+import type { Ref } from "vue";
+import { CATEGORIES } from "~/utils/constants/categories";
 
-const imageUploadRef = ref<{ selectedFile: Ref<File | null>; clearSelection: () => void } | null>(null)
+const imageUploadRef = ref<{
+  selectedFile: Ref<File | null>;
+  clearSelection: () => void;
+} | null>(null);
 
 const formData = reactive({
-  title: '',
-  body: '',
-  category: '',
-  location: '',
-})
+  title: "",
+  body: "",
+  category: "",
+  location: "",
+});
 
 const errors = reactive({
-  title: '',
-  body: '',
-  category: '',
-  location: '',
-  general: '',
-})
+  title: "",
+  body: "",
+  category: "",
+  location: "",
+  general: "",
+});
 
-const isSubmitting = ref(false)
+const isSubmitting = ref(false);
 
-const categories = [
-  { value: 'roads', label: 'Roads' },
-  { value: 'water', label: 'Water' },
-  { value: 'electricity', label: 'Electricity' },
-  { value: 'sanitation', label: 'Sanitation' },
-]
+const categories = CATEGORIES;
 
-const clearErrors = () => {
-  errors.title = ''
-  errors.body = ''
-  errors.category = ''
-  errors.location = ''
-  errors.general = ''
+function clearErrors() {
+  errors.title = "";
+  errors.body = "";
+  errors.category = "";
+  errors.location = "";
+  errors.general = "";
 }
 
-const validateForm = (): boolean => {
-  clearErrors()
-  let isValid = true
+function validateForm(): boolean {
+  clearErrors();
+  let isValid = true;
 
   if (!formData.title.trim()) {
-    errors.title = 'Title is required'
-    isValid = false
+    errors.title = "Title is required";
+    isValid = false;
   }
-
   if (!formData.body.trim()) {
-    errors.body = 'Description is required'
-    isValid = false
+    errors.body = "Description is required";
+    isValid = false;
   }
-
   if (!formData.category) {
-    errors.category = 'Category is required'
-    isValid = false
+    errors.category = "Category is required";
+    isValid = false;
   }
-
   if (!formData.location.trim()) {
-    errors.location = 'Location is required'
-    isValid = false
+    errors.location = "Location is required";
+    isValid = false;
   }
 
-  return isValid
+  return isValid;
 }
 
-const handleSubmit = async () => {
-  if (!validateForm()) {
-    return
-  }
+async function handleSubmit() {
+  if (!validateForm()) return;
 
-  isSubmitting.value = true
-  clearErrors()
+  isSubmitting.value = true;
+  clearErrors();
 
   try {
-    let imageUrl: string | undefined
+    let imageUrl: string | undefined;
 
-    // Upload image if selected
-    const imageRef = imageUploadRef.value
-    const file = imageRef?.selectedFile ? unref(imageRef.selectedFile) : null
+    const imageRef = imageUploadRef.value;
+    const file = imageRef?.selectedFile ? unref(imageRef.selectedFile) : null;
     if (file) {
-      const formDataImg = new FormData()
-      formDataImg.append('image', file)
+      const formDataImg = new FormData();
+      formDataImg.append("image", file);
 
-      const uploadResponse = await $fetch<{ url: string }>('/api/upload', {
-        method: 'POST',
+      const uploadResponse = await $fetch<{ url: string }>("/api/upload", {
+        method: "POST",
         body: formDataImg,
-      })
+      });
 
-      imageUrl = uploadResponse.url
+      imageUrl = uploadResponse.url;
     }
 
-    // Create complaint
-    await $fetch('/api/complaints', {
-      method: 'POST',
+    await $fetch("/api/complaints", {
+      method: "POST",
       body: {
         title: formData.title,
         body: formData.body,
@@ -98,119 +90,125 @@ const handleSubmit = async () => {
         location: formData.location,
         imageUrl,
       },
-    })
+    });
 
-    // Reset form
-    formData.title = ''
-    formData.body = ''
-    formData.category = ''
-    formData.location = ''
-    imageUploadRef.value?.clearSelection()
-
-    // Redirect to home
-    await navigateTo('/')
+    await navigateTo("/");
   } catch (error: any) {
-    console.error('Error submitting complaint:', error)
-    errors.general = error.data?.message || 'Failed to submit complaint. Please try again.'
+    console.error("Error submitting complaint:", error);
+    errors.general =
+      error.data?.message || "Failed to submit complaint. Please try again.";
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
 }
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
-    <div v-if="errors.general" class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
+  <form @submit.prevent="handleSubmit" class="space-y-5">
+    <!-- Error banner -->
+    <div
+      v-if="errors.general"
+      class="flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-xl text-sm"
+    >
+      <AppIcon name="alert-circle" :size="20" class="flex-shrink-0" />
       {{ errors.general }}
     </div>
 
+    <!-- Title -->
     <div>
-      <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
-        Title <span class="text-red-500">*</span>
+      <label for="title" class="block text-sm font-medium text-white/70 mb-1.5">
+        Title <span class="text-amber-400">*</span>
       </label>
       <input
         id="title"
         v-model="formData.title"
         type="text"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        :class="{ 'border-red-500': errors.title }"
+        class="input-field"
+        :class="{ 'input-error': errors.title }"
         placeholder="Brief summary of the issue"
       />
-      <p v-if="errors.title" class="mt-1 text-sm text-red-600">
+      <p v-if="errors.title" class="mt-1.5 text-sm text-red-400">
         {{ errors.title }}
       </p>
     </div>
 
+    <!-- Description -->
     <div>
-      <label for="body" class="block text-sm font-medium text-gray-700 mb-2">
-        Description <span class="text-red-500">*</span>
+      <label for="body" class="block text-sm font-medium text-white/70 mb-1.5">
+        Description <span class="text-amber-400">*</span>
       </label>
       <textarea
         id="body"
         v-model="formData.body"
         rows="5"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        :class="{ 'border-red-500': errors.body }"
-        placeholder="Detailed description of the complaint"
+        class="input-field resize-none"
+        :class="{ 'input-error': errors.body }"
+        placeholder="Describe the issue in detail..."
       />
-      <p v-if="errors.body" class="mt-1 text-sm text-red-600">
+      <p v-if="errors.body" class="mt-1.5 text-sm text-red-400">
         {{ errors.body }}
       </p>
     </div>
 
-    <div>
-      <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
-        Category <span class="text-red-500">*</span>
-      </label>
-      <select
-        id="category"
-        v-model="formData.category"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        :class="{ 'border-red-500': errors.category }"
-      >
-        <option value="">Select a category</option>
-        <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-          {{ cat.label }}
-        </option>
-      </select>
-      <p v-if="errors.category" class="mt-1 text-sm text-red-600">
-        {{ errors.category }}
-      </p>
+    <!-- Category + Location -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label
+          for="category"
+          class="block text-sm font-medium text-white/70 mb-1.5"
+        >
+          Category <span class="text-amber-400">*</span>
+        </label>
+        <select
+          id="category"
+          v-model="formData.category"
+          class="input-field"
+          :class="{ 'input-error': errors.category }"
+        >
+          <option value="" disabled>Select a category</option>
+          <option v-for="cat in categories" :key="cat.value" :value="cat.value">
+            {{ cat.label }}
+          </option>
+        </select>
+        <p v-if="errors.category" class="mt-1.5 text-sm text-red-400">
+          {{ errors.category }}
+        </p>
+      </div>
+
+      <div>
+        <label
+          for="location"
+          class="block text-sm font-medium text-white/70 mb-1.5"
+        >
+          Location <span class="text-amber-400">*</span>
+        </label>
+        <input
+          id="location"
+          v-model="formData.location"
+          type="text"
+          class="input-field"
+          :class="{ 'input-error': errors.location }"
+          placeholder="Street address or area"
+        />
+        <p v-if="errors.location" class="mt-1.5 text-sm text-red-400">
+          {{ errors.location }}
+        </p>
+      </div>
     </div>
 
-    <div>
-      <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
-        Location <span class="text-red-500">*</span>
-      </label>
-      <input
-        id="location"
-        v-model="formData.location"
-        type="text"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        :class="{ 'border-red-500': errors.location }"
-        placeholder="Street address or area name"
-      />
-      <p v-if="errors.location" class="mt-1 text-sm text-red-600">
-        {{ errors.location }}
-      </p>
-    </div>
-
+    <!-- Image Upload -->
     <ImageUpload ref="imageUploadRef" />
 
-    <div class="flex gap-4">
-      <button
-        type="submit"
-        :disabled="isSubmitting"
-        class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
-      >
-        {{ isSubmitting ? 'Submitting...' : 'Submit Complaint' }}
-      </button>
-      <NuxtLink
-        to="/"
-        class="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-      >
+    <!-- Actions -->
+    <div class="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+      <NuxtLink to="/" class="btn-secondary flex-1 sm:flex-none text-center">
         Cancel
       </NuxtLink>
+      <button type="submit" :disabled="isSubmitting" class="btn-primary flex-1">
+        <AppIcon v-if="!isSubmitting" name="plus" :size="16" />
+        <AppIcon v-else name="spinner" :size="16" />
+        {{ isSubmitting ? "Submitting..." : "Submit Report" }}
+      </button>
     </div>
   </form>
 </template>

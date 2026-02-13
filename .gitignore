@@ -1,4 +1,8 @@
 node_modules
+.nuxt/
+.output/
+*.db
+
 # Keep environment variables out of version control
 .env
 

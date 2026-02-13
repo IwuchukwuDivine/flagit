@@ -2,12 +2,12 @@ import process from 'node:process';globalThis._importMeta_={url:import.meta.url,
 import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseHeaders, setResponseStatus, send, getRequestHeaders, setResponseHeader, appendResponseHeader, getRequestURL, getResponseHeader, removeResponseHeader, createError, getQuery as getQuery$1, readBody, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, setCookie, deleteCookie, getCookie, readMultipartFormData, getResponseStatusText } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
-import nodeCrypto, { randomUUID } from 'node:crypto';
+import nodeCrypto, { createHmac, randomUUID } from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
 import { escapeHtml } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/@vue/shared/dist/shared.cjs.js';
-import { PrismaClient } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/@prisma/client/default.js';
 import { z } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/zod/index.js';
 import bcrypt from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/bcrypt/bcrypt.js';
+import { PrismaClient } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/@prisma/client/default.js';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
 import { promises, existsSync } from 'node:fs';
 import { createRenderer, getRequestDependencies, getPreloadLinks, getPrefetchLinks } from 'file:///Users/dee_vyn/monolithic-ralph/node_modules/vue-bundle-renderer/dist/runtime.mjs';
@@ -2016,26 +2016,9 @@ async function errorHandler(error, event) {
   // H3 will handle fallback
 }
 
-const script = `
-if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
-  Object.defineProperty(window, '__NUXT_DEVTOOLS_TIME_METRIC__', {
-    value: {},
-    enumerable: false,
-    configurable: true,
-  })
-}
-window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
-`;
-
-const _4nD0bcYhH_mpUjEMsBzXDAsedez3kOnElf_0oScG7E = (function(nitro) {
-  nitro.hooks.hook("render:html", (htmlContext) => {
-    htmlContext.head.push(`<script>${script}<\/script>`);
-  });
-});
-
 const rootDir = "/Users/dee_vyn/monolithic-ralph";
 
-const appHead = {"meta":[{"name":"viewport","content":"width=device-width, initial-scale=1"},{"charset":"utf-8"}],"link":[],"style":[],"script":[],"noscript":[]};
+const appHead = {"meta":[{"charset":"utf-8"},{"name":"description","content":"Flagit — flag civic issues in your community."},{"name":"viewport","content":"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"},{"name":"keywords","content":"Flagit, Community, Complaints, Issues, Concerns"}],"link":[],"style":[],"script":[],"noscript":[],"title":"Flagit","htmlAttrs":{"lang":"en"}};
 
 const appRootTag = "div";
 
@@ -2136,24 +2119,23 @@ function onConsoleLog(callback) {
 }
 
 const plugins = [
-  _4nD0bcYhH_mpUjEMsBzXDAsedez3kOnElf_0oScG7E,
-_qBnFp1MhI4nSBRS91ErXoXNj0hGhwdo62D8lW08LFjs
+  _qBnFp1MhI4nSBRS91ErXoXNj0hGhwdo62D8lW08LFjs
 ];
 
 const assets = {
-  "/index.mjs": {
-    "type": "text/javascript; charset=utf-8",
-    "etag": "\"1d1a9-YzY5ohTMc1HTJ8qRO/h30U20tdM\"",
-    "mtime": "2026-02-12T16:38:35.529Z",
-    "size": 119209,
-    "path": "index.mjs"
-  },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"73f84-t5Vq8ej3hcntM4VUvqQ27GgviGY\"",
-    "mtime": "2026-02-12T16:38:35.529Z",
-    "size": 475012,
+    "etag": "\"7bcd2-4lgCLdiRs90Rpkv1000ztpoYnsQ\"",
+    "mtime": "2026-02-12T22:59:07.820Z",
+    "size": 507090,
     "path": "index.mjs.map"
+  },
+  "/index.mjs": {
+    "type": "text/javascript; charset=utf-8",
+    "etag": "\"1fcf1-LMEtFQ+LE2osIo3+lvLu+Mcy2yQ\"",
+    "mtime": "2026-02-12T22:59:07.820Z",
+    "size": 130289,
+    "path": "index.mjs"
   }
 };
 
@@ -2609,8 +2591,16 @@ const _lazy_J5ASId = () => Promise.resolve().then(function () { return me_get$1;
 const _lazy_0AvRfJ = () => Promise.resolve().then(function () { return register_post$1; });
 const _lazy_sRfWRR = () => Promise.resolve().then(function () { return _id__delete$1; });
 const _lazy_S0pg09 = () => Promise.resolve().then(function () { return _id__get$1; });
+const _lazy_Ed8wv9 = () => Promise.resolve().then(function () { return _id__patch$1; });
+const _lazy_faB0KV = () => Promise.resolve().then(function () { return index_get$5; });
+const _lazy_pZqO1U = () => Promise.resolve().then(function () { return index_post$5; });
+const _lazy_k8hyrK = () => Promise.resolve().then(function () { return index_get$3; });
+const _lazy_BPbDx8 = () => Promise.resolve().then(function () { return index_post$3; });
+const _lazy_E4FACM = () => Promise.resolve().then(function () { return engagement_get$1; });
+const _lazy_cw4LpL = () => Promise.resolve().then(function () { return feed_get$1; });
 const _lazy_AsW1Xi = () => Promise.resolve().then(function () { return index_get$1; });
 const _lazy_qCGDlN = () => Promise.resolve().then(function () { return index_post$1; });
+const _lazy_XJcENL = () => Promise.resolve().then(function () { return health_get$1; });
 const _lazy_W2dJS5 = () => Promise.resolve().then(function () { return upload_post$1; });
 const _lazy_7CVTns = () => Promise.resolve().then(function () { return renderer$1; });
 
@@ -2622,8 +2612,16 @@ const handlers = [
   { route: '/api/auth/register', handler: _lazy_0AvRfJ, lazy: true, middleware: false, method: "post" },
   { route: '/api/complaints/:id', handler: _lazy_sRfWRR, lazy: true, middleware: false, method: "delete" },
   { route: '/api/complaints/:id', handler: _lazy_S0pg09, lazy: true, middleware: false, method: "get" },
+  { route: '/api/complaints/:id', handler: _lazy_Ed8wv9, lazy: true, middleware: false, method: "patch" },
+  { route: '/api/complaints/:id/comments', handler: _lazy_faB0KV, lazy: true, middleware: false, method: "get" },
+  { route: '/api/complaints/:id/comments', handler: _lazy_pZqO1U, lazy: true, middleware: false, method: "post" },
+  { route: '/api/complaints/:id/likes', handler: _lazy_k8hyrK, lazy: true, middleware: false, method: "get" },
+  { route: '/api/complaints/:id/likes', handler: _lazy_BPbDx8, lazy: true, middleware: false, method: "post" },
+  { route: '/api/complaints/engagement', handler: _lazy_E4FACM, lazy: true, middleware: false, method: "get" },
+  { route: '/api/complaints/feed', handler: _lazy_cw4LpL, lazy: true, middleware: false, method: "get" },
   { route: '/api/complaints', handler: _lazy_AsW1Xi, lazy: true, middleware: false, method: "get" },
   { route: '/api/complaints', handler: _lazy_qCGDlN, lazy: true, middleware: false, method: "post" },
+  { route: '/api/health', handler: _lazy_XJcENL, lazy: true, middleware: false, method: "get" },
   { route: '/api/upload', handler: _lazy_W2dJS5, lazy: true, middleware: false, method: "post" },
   { route: '/__nuxt_error', handler: _lazy_7CVTns, lazy: true, middleware: false, method: undefined },
   { route: '/__nuxt_island/**', handler: _SxA8c9, lazy: false, middleware: false, method: undefined },
@@ -2967,13 +2965,27 @@ const styles$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: styles
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const SESSION_COOKIE_NAME = "speak-up-session";
+const SESSION_COOKIE_NAME = "flagit-session";
+function getSessionSecret() {
+  const secret = process.env.SESSION_SECRET;
+  return secret || "dev-fallback-secret-not-for-production";
+}
+function sign(payload) {
+  const hmac = createHmac("sha256", getSessionSecret());
+  return hmac.update(payload).digest("hex");
+}
 function encodeSession(user) {
-  return Buffer.from(JSON.stringify(user)).toString("base64");
+  const payload = Buffer.from(JSON.stringify(user)).toString("base64");
+  const signature = sign(payload);
+  return `${payload}.${signature}`;
 }
 function decodeSession(encoded) {
   try {
-    const json = Buffer.from(encoded, "base64").toString("utf-8");
+    const [payload, signature] = encoded.split(".");
+    if (!payload || !signature) return null;
+    const expected = sign(payload);
+    if (signature !== expected) return null;
+    const json = Buffer.from(payload, "base64").toString("utf-8");
     return JSON.parse(json);
   } catch {
     return null;
@@ -3017,7 +3029,13 @@ async function requireAuth(event) {
   return user;
 }
 
-const prisma$2 = new PrismaClient();
+var _a;
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
+const prisma = (_a = globalThis.prismaGlobal) != null ? _a : prismaClientSingleton();
+globalThis.prismaGlobal = prisma;
+
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(1, "Password is required")
@@ -3026,7 +3044,7 @@ const login_post = defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const data = loginSchema.parse(body);
-    const user = await prisma$2.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email: data.email }
     });
     if (!user) {
@@ -3095,7 +3113,6 @@ const me_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   default: me_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
-const prisma$1 = new PrismaClient();
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
@@ -3105,7 +3122,7 @@ const register_post = defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
     const data = registerSchema.parse(body);
-    const existingUser = await prisma$1.user.findUnique({
+    const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
     });
     if (existingUser) {
@@ -3115,7 +3132,7 @@ const register_post = defineEventHandler(async (event) => {
       });
     }
     const hashedPassword = await hashPassword(data.password);
-    const user = await prisma$1.user.create({
+    const user = await prisma.user.create({
       data: {
         name: data.name,
         email: data.email,
@@ -3157,13 +3174,6 @@ const register_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePro
   __proto__: null,
   default: register_post
 }, Symbol.toStringTag, { value: 'Module' }));
-
-var _a;
-const prismaClientSingleton = () => {
-  return new PrismaClient();
-};
-const prisma = (_a = globalThis.prismaGlobal) != null ? _a : prismaClientSingleton();
-globalThis.prismaGlobal = prisma;
 
 const _id__delete = defineEventHandler(async (event) => {
   try {
@@ -3254,6 +3264,308 @@ const _id__get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty
   default: _id__get
 }, Symbol.toStringTag, { value: 'Module' }));
 
+const CATEGORY_VALUES = [
+  "roads",
+  "water",
+  "electricity",
+  "sanitation",
+  "health care",
+  "education",
+  "transportation",
+  "public services",
+  "other"
+];
+
+const updateSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  body: z.string().min(1, "Body is required"),
+  category: z.enum(CATEGORY_VALUES, { message: "Invalid category" }),
+  location: z.string().min(1, "Location is required"),
+  imageUrl: z.string().optional().nullable()
+});
+const _id__patch = defineEventHandler(async (event) => {
+  var _a;
+  const user = await requireAuth(event);
+  const id = getRouterParam(event, "id");
+  if (!id || isNaN(Number(id))) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid ID" });
+  }
+  const complaint = await prisma.complaint.findUnique({
+    where: { id: Number(id) }
+  });
+  if (!complaint) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Complaint not found"
+    });
+  }
+  if (complaint.userId !== user.id) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "You can only edit your own complaints"
+    });
+  }
+  try {
+    const body = await readBody(event);
+    const validated = updateSchema.parse(body);
+    const updated = await prisma.complaint.update({
+      where: { id: Number(id) },
+      data: {
+        title: validated.title,
+        body: validated.body,
+        category: validated.category,
+        location: validated.location,
+        imageUrl: (_a = validated.imageUrl) != null ? _a : complaint.imageUrl
+      }
+    });
+    return updated;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Validation failed",
+        data: error.issues
+      });
+    }
+    throw createError({
+      statusCode: 500,
+      statusMessage: "Internal server error"
+    });
+  }
+});
+
+const _id__patch$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: _id__patch
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const index_get$4 = defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  if (!id || isNaN(Number(id))) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid complaint ID" });
+  }
+  const comments = await prisma.comment.findMany({
+    where: { complaintId: Number(id) },
+    orderBy: { createdAt: "asc" }
+  });
+  return comments;
+});
+
+const index_get$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_get$4
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const commentSchema = z.object({
+  body: z.string().min(1, "Comment cannot be empty").max(1e3, "Comment is too long")
+});
+const index_post$4 = defineEventHandler(async (event) => {
+  const user = await requireAuth(event);
+  const id = getRouterParam(event, "id");
+  if (!id || isNaN(Number(id))) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid complaint ID" });
+  }
+  const complaint = await prisma.complaint.findUnique({
+    where: { id: Number(id) }
+  });
+  if (!complaint) {
+    throw createError({ statusCode: 404, statusMessage: "Complaint not found" });
+  }
+  try {
+    const body = await readBody(event);
+    const validated = commentSchema.parse(body);
+    const comment = await prisma.comment.create({
+      data: {
+        body: validated.body,
+        authorName: user.name,
+        userId: user.id,
+        complaintId: Number(id)
+      }
+    });
+    return comment;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Validation failed",
+        data: error.issues
+      });
+    }
+    throw createError({ statusCode: 500, statusMessage: "Internal server error" });
+  }
+});
+
+const index_post$5 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_post$4
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const index_get$2 = defineEventHandler(async (event) => {
+  const id = getRouterParam(event, "id");
+  if (!id || isNaN(Number(id))) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid complaint ID" });
+  }
+  const count = await prisma.like.count({
+    where: { complaintId: Number(id) }
+  });
+  const user = await getUserSession(event);
+  let liked = false;
+  if (user) {
+    const existing = await prisma.like.findUnique({
+      where: { userId_complaintId: { userId: user.id, complaintId: Number(id) } }
+    });
+    liked = !!existing;
+  }
+  return { count, liked };
+});
+
+const index_get$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_get$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const index_post$2 = defineEventHandler(async (event) => {
+  const user = await requireAuth(event);
+  const id = getRouterParam(event, "id");
+  if (!id || isNaN(Number(id))) {
+    throw createError({ statusCode: 400, statusMessage: "Invalid complaint ID" });
+  }
+  const complaintId = Number(id);
+  const complaint = await prisma.complaint.findUnique({
+    where: { id: complaintId }
+  });
+  if (!complaint) {
+    throw createError({ statusCode: 404, statusMessage: "Complaint not found" });
+  }
+  const existing = await prisma.like.findUnique({
+    where: { userId_complaintId: { userId: user.id, complaintId } }
+  });
+  if (existing) {
+    await prisma.like.delete({ where: { id: existing.id } });
+    const count2 = await prisma.like.count({ where: { complaintId } });
+    return { liked: false, count: count2 };
+  }
+  await prisma.like.create({
+    data: { userId: user.id, complaintId }
+  });
+  const count = await prisma.like.count({ where: { complaintId } });
+  return { liked: true, count };
+});
+
+const index_post$3 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: index_post$2
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const engagement_get = defineEventHandler(async (event) => {
+  const user = await getUserSession(event);
+  const complaints = await prisma.complaint.findMany({
+    select: {
+      id: true,
+      _count: {
+        select: {
+          likes: true,
+          comments: true
+        }
+      }
+    }
+  });
+  let userLikes = /* @__PURE__ */ new Set();
+  if (user) {
+    const likes = await prisma.like.findMany({
+      where: { userId: user.id },
+      select: { complaintId: true }
+    });
+    userLikes = new Set(likes.map((l) => l.complaintId));
+  }
+  const engagement = {};
+  for (const c of complaints) {
+    engagement[c.id] = {
+      likes: c._count.likes,
+      comments: c._count.comments,
+      liked: userLikes.has(c.id)
+    };
+  }
+  return engagement;
+});
+
+const engagement_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: engagement_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const PAGE_SIZE = 10;
+const feed_get = defineEventHandler(async (event) => {
+  const query = getQuery$1(event);
+  const limit = Math.min(Number(query.limit) || PAGE_SIZE, 50);
+  const cursor = query.cursor ? Number(query.cursor) : void 0;
+  const status = typeof query.status === "string" && query.status !== "recent" ? query.status : void 0;
+  const user = await getUserSession(event);
+  const where = {};
+  if (status) where.status = status;
+  if (cursor) where.id = { lt: cursor };
+  const complaints = await prisma.complaint.findMany({
+    where,
+    orderBy: { createdAt: "desc" },
+    take: limit + 1,
+    include: {
+      _count: {
+        select: { likes: true, comments: true }
+      }
+    }
+  });
+  const hasMore = complaints.length > limit;
+  const items = hasMore ? complaints.slice(0, limit) : complaints;
+  const nextCursor = hasMore ? items[items.length - 1].id : null;
+  let userLikes = /* @__PURE__ */ new Set();
+  if (user && items.length > 0) {
+    const likes = await prisma.like.findMany({
+      where: {
+        userId: user.id,
+        complaintId: { in: items.map((c) => c.id) }
+      },
+      select: { complaintId: true }
+    });
+    userLikes = new Set(likes.map((l) => l.complaintId));
+  }
+  const feedItems = items.map((c) => {
+    const { _count, ...complaint } = c;
+    return {
+      ...complaint,
+      likes: _count.likes,
+      comments: _count.comments,
+      liked: userLikes.has(c.id)
+    };
+  });
+  let stats = void 0;
+  let categoryCounts = void 0;
+  if (!cursor) {
+    const allComplaints = await prisma.complaint.findMany({
+      select: { status: true, category: true }
+    });
+    const total = allComplaints.length;
+    const pending = allComplaints.filter((c) => c.status === "pending").length;
+    const resolved = allComplaints.filter((c) => c.status === "resolved").length;
+    stats = { total, pending, resolved };
+    const counts = {};
+    for (const c of allComplaints) {
+      counts[c.category] = (counts[c.category] || 0) + 1;
+    }
+    categoryCounts = counts;
+  }
+  return {
+    items: feedItems,
+    nextCursor,
+    ...stats && { stats },
+    ...categoryCounts && { categoryCounts }
+  };
+});
+
+const feed_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: feed_get
+}, Symbol.toStringTag, { value: 'Module' }));
+
 const index_get = defineEventHandler(async () => {
   try {
     const complaints = await prisma.complaint.findMany({
@@ -3278,9 +3590,7 @@ const index_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.definePropert
 const complaintSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Body is required"),
-  category: z.enum(["roads", "water", "electricity", "sanitation"], {
-    message: "Invalid category"
-  }),
+  category: z.enum(CATEGORY_VALUES, { message: "Invalid category" }),
   location: z.string().min(1, "Location is required"),
   imageUrl: z.string().optional()
 });
@@ -3318,6 +3628,18 @@ const index_post = defineEventHandler(async (event) => {
 const index_post$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   __proto__: null,
   default: index_post
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const health_get = defineEventHandler(() => {
+  return {
+    status: "ok",
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  };
+});
+
+const health_get$1 = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: health_get
 }, Symbol.toStringTag, { value: 'Module' }));
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;

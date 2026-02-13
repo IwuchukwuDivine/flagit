@@ -17,19 +17,45 @@ model User {
   password   String
   createdAt  DateTime    @default(now())
   complaints Complaint[]
+  comments   Comment[]
+  likes      Like[]
 }
 
 model Complaint {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   title      String
   body       String
   imageUrl   String?
   authorName String
   category   String
   location   String
-  status     String   @default("pending")
+  status     String    @default("pending")
   userId     Int
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments   Comment[]
+  likes      Like[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  body        String
+  authorName  String
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complaintId Int
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
+
+model Like {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  complaintId Int
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+
+  @@unique([userId, complaintId])
 }

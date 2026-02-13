@@ -18,9 +18,4 @@ export default defineVitestConfig({
       },
     },
   },
-  resolve: {
-    alias: {
-      'bun:test': 'vitest',
-    },
-  },
 })

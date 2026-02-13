@@ -1,66 +1,129 @@
 <script setup lang="ts">
-import type { Complaint } from '~/utils/types/complaint'
+import type { Complaint } from "~/utils/types/complaint";
 
 const props = defineProps<{
-  complaint: Complaint
-}>()
+  complaint: Complaint;
+  likes?: number;
+  comments?: number;
+  liked?: boolean;
+}>();
+
+const emit = defineEmits<{
+  like: [complaintId: number];
+}>();
 
 const truncatedBody = computed(() => {
-  const maxLength = 150
+  const maxLength = 140;
   if (props.complaint.body.length > maxLength) {
-    return props.complaint.body.substring(0, maxLength) + '...'
+    return props.complaint.body.substring(0, maxLength) + "...";
   }
-  return props.complaint.body
-})
+  return props.complaint.body;
+});
 
-const timeAgo = computed(() => relativeTime(props.complaint.createdAt))
+const timeAgo = computed(() => relativeTime(props.complaint.createdAt));
+
+const initials = computed(() => {
+  const name = props.complaint.authorName || "?";
+  return name.charAt(0).toUpperCase();
+});
+
+const avatarColor = computed(() => {
+  const colors = [
+    "bg-amber-500",
+    "bg-sky-500",
+    "bg-violet-500",
+    "bg-emerald-500",
+    "bg-rose-500",
+    "bg-orange-500",
+  ];
+  const hash = props.complaint.authorName
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
+});
+
+function onLikeClick(e: Event) {
+  e.preventDefault();
+  e.stopPropagation();
+  emit("like", props.complaint.id);
+}
 </script>
 
 <template>
   <NuxtLink
     :to="`/complaints/${complaint.id}`"
-    class="block bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6"
+    class="block border-b border-white/5 px-5 py-5 hover:bg-white/[0.02] transition-colors"
   >
-    <div class="flex flex-col md:flex-row gap-4">
-      <div v-if="complaint.imageUrl" class="md:w-1/3">
+    <!-- Header: Avatar + Name + Time + Status -->
+    <div class="flex items-start gap-3 mb-3">
+      <div
+        :class="[
+          'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
+          avatarColor,
+        ]"
+      >
+        <span class="text-sm font-bold text-white">{{ initials }}</span>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-sm font-bold text-white">{{
+            complaint.authorName
+          }}</span>
+          <span class="text-xs text-white/30">{{ timeAgo }}</span>
+          <StatusBadge
+            :status="complaint.status"
+            class="ml-auto flex-shrink-0"
+          />
+        </div>
+
+        <!-- Category -->
+        <CategoryBadge :category="complaint.category" class="mt-0.5" />
+      </div>
+    </div>
+
+    <!-- Body -->
+    <p class="text-[15px] text-white/70 leading-relaxed mb-3 pl-[52px]">
+      {{ truncatedBody }}
+    </p>
+
+    <!-- Image -->
+    <div v-if="complaint.imageUrl" class="pl-[52px] mb-3">
+      <div class="rounded-2xl overflow-hidden border border-white/5">
         <img
           :src="complaint.imageUrl"
           :alt="complaint.title"
-          class="w-full h-48 object-cover rounded-lg"
+          class="w-full h-52 object-cover"
         />
       </div>
+    </div>
 
-      <div class="flex-1">
-        <div class="flex items-start justify-between gap-4 mb-2">
-          <h3 class="text-xl font-semibold text-gray-900 flex-1">
-            {{ complaint.title }}
-          </h3>
-          <CategoryBadge :category="complaint.category" />
-        </div>
+    <!-- Footer: Location + Actions -->
+    <div class="pl-[52px] flex items-center gap-5 text-xs text-white/30">
+      <span class="flex items-center gap-1.5">
+        <AppIcon name="location-pin" :size="14" />
+        {{ complaint.location }}
+      </span>
 
-        <p class="text-gray-600 mb-4">
-          {{ truncatedBody }}
-        </p>
+      <span class="flex-1" />
 
-        <div class="flex items-center justify-between text-sm text-gray-500">
-          <div class="flex items-center gap-4">
-            <span class="flex items-center gap-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              {{ complaint.authorName }}
-            </span>
-            <span class="flex items-center gap-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              {{ complaint.location }}
-            </span>
-          </div>
-          <span>{{ timeAgo }}</span>
-        </div>
-      </div>
+      <!-- Like button -->
+      <button
+        class="inline-flex items-center gap-1 transition-colors"
+        :class="liked ? 'text-red-500' : 'text-white/30 hover:text-red-400'"
+        @click="onLikeClick"
+      >
+        <AppIcon name="heart" :size="16" :filled="!!liked" />
+        <span v-if="likes" class="text-[11px] font-medium">{{ likes }}</span>
+      </button>
+
+      <!-- Comment link -->
+      <span class="inline-flex items-center gap-1 text-white/30">
+        <AppIcon name="comment" :size="16" />
+        <span v-if="comments" class="text-[11px] font-medium">{{
+          comments
+        }}</span>
+      </span>
     </div>
   </NuxtLink>
 </template>

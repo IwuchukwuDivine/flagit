@@ -18,10 +18,28 @@ declare module "nitropack/types" {
     '/api/complaints/:id': {
       'delete': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id].delete').default>>>>
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id].get').default>>>>
+      'patch': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id].patch').default>>>>
+    }
+    '/api/complaints/:id/comments': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id]/comments/index.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id]/comments/index.post').default>>>>
+    }
+    '/api/complaints/:id/likes': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id]/likes/index.get').default>>>>
+      'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/[id]/likes/index.post').default>>>>
+    }
+    '/api/complaints/engagement': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/engagement.get').default>>>>
+    }
+    '/api/complaints/feed': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/feed.get').default>>>>
     }
     '/api/complaints': {
       'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/index.get').default>>>>
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/complaints/index.post').default>>>>
+    }
+    '/api/health': {
+      'get': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/health.get').default>>>>
     }
     '/api/upload': {
       'post': Simplify<Serialize<Awaited<ReturnType<typeof import('../../server/api/upload.post').default>>>>

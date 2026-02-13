@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import prisma from '~/server/utils/prisma'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required'),

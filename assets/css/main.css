@@ -3,7 +3,61 @@
 @tailwind utilities;
 
 @layer base {
+  html,
   body {
-    @apply bg-gray-50 text-gray-900;
+    overscroll-behavior-y: none;
+  }
+
+  body {
+    @apply bg-[#0d0d0d] text-white antialiased;
+  }
+
+  /* Custom scrollbar for dark theme */
+  ::-webkit-scrollbar {
+    @apply w-1.5;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-amber-400 text-black px-5 py-2.5 rounded-full font-bold text-sm hover:bg-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:ring-offset-2 focus:ring-offset-[#0d0d0d] disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-white/5 text-white/80 px-5 py-2.5 rounded-full font-semibold text-sm border border-white/10 hover:bg-white/10 hover:text-white focus:outline-none transition-all duration-200;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 text-white/50 px-3 py-2 rounded-lg font-medium text-sm hover:bg-white/5 hover:text-white/80 transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-amber-400/50 focus:border-transparent transition-all duration-200;
+  }
+
+  .input-error {
+    @apply border-red-500/50 focus:ring-red-400/50;
+  }
+
+  .card {
+    @apply bg-[#141414] rounded-2xl border border-white/5;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-white/50 hover:bg-white/5 hover:text-white transition-all duration-200;
+  }
+
+  .sidebar-link-active {
+    @apply bg-white/5 text-white;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider;
   }
 }
