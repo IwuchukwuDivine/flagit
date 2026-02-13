@@ -1,0 +1,69 @@
+name: Feature Request
+description: Suggest a new feature or improvement for Flagit.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea to make Flagit better? We'd love to hear it. Please describe the feature below.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What problem does this feature solve? Is this related to a frustration?
+      placeholder: "I'm always frustrated when I can't filter complaints by my neighborhood..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the feature or change you'd like to see.
+      placeholder: "Add a location-based filter on the feed page that lets users search by area or pin a location on a map."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered any alternative solutions or workarounds?
+    validations:
+      required: false
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups or examples
+      description: If you have any sketches, mockups, or references from other apps, share them here.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Area of the app
+      description: Which part of Flagit does this relate to?
+      options:
+        - Feed / Home page
+        - Complaint submission
+        - Complaint detail page
+        - Comments / Engagement
+        - User profile
+        - Authentication
+        - Admin / Moderation
+        - API
+        - Other
+    validations:
+      required: false
+
+  - type: checkbox
+    id: contribution
+    attributes:
+      label: Willing to contribute?
+      description: Would you be interested in implementing this feature yourself?
+      options:
+        - label: I'd be willing to submit a PR for this feature.
