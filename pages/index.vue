@@ -1,6 +1,21 @@
 <script setup lang="ts">
 import type { Complaint } from "~/utils/types/complaint";
 
+useSeoMeta({
+  title: "Flagit — Community Issue Tracker",
+  ogTitle: "Flagit — Community Issue Tracker",
+  description:
+    "Flag civic issues in your community. Report potholes, sanitation problems, broken infrastructure and more.",
+  ogDescription:
+    "Flag civic issues in your community. Report potholes, sanitation problems, broken infrastructure and more.",
+  ogImage: "https://flagit.mooo.com/logo.png",
+  twitterCard: "summary_large_image",
+});
+
+useHead({
+  link: [{ rel: "canonical", href: "https://flagit.mooo.com/" }],
+});
+
 const user =
   inject<Ref<{ id: number; name: string; email: string } | null>>(
     "currentUser",

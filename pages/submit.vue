@@ -2,6 +2,12 @@
 definePageMeta({
   middleware: "auth",
 });
+
+useSeoMeta({
+  title: "Report an Issue — Flagit",
+  description: "Submit a civic complaint to help improve your community.",
+  robots: "noindex, nofollow",
+});
 </script>
 
 <template>

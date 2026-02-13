@@ -1,4 +1,17 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: "Log In — Flagit",
+  ogTitle: "Log In — Flagit",
+  description: "Log in to your Flagit account to report and track civic issues.",
+  ogDescription: "Log in to your Flagit account to report and track civic issues.",
+  ogImage: "https://flagit.mooo.com/logo.png",
+  twitterCard: "summary",
+});
+
+useHead({
+  link: [{ rel: "canonical", href: "https://flagit.mooo.com/auth/login" }],
+});
+
 const email = ref("");
 const password = ref("");
 const error = ref("");

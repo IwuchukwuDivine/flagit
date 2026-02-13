@@ -5,6 +5,11 @@ definePageMeta({
   middleware: "auth",
 });
 
+useSeoMeta({
+  title: "My Profile — Flagit",
+  robots: "noindex, nofollow",
+});
+
 const user =
   inject<Ref<{ id: number; name: string; email: string } | null>>(
     "currentUser",

@@ -113,13 +113,13 @@ function onLikeClick(e: Event) {
         :class="liked ? 'text-red-500' : 'text-white/30 hover:text-red-400'"
         @click="onLikeClick"
       >
-        <AppIcon name="heart" :size="16" :filled="!!liked" />
+        <AppIcon name="heart" :size="18" :filled="!!liked" />
         <span v-if="likes" class="text-[11px] font-medium">{{ likes }}</span>
       </button>
 
       <!-- Comment link -->
       <span class="inline-flex items-center gap-1 text-white/30">
-        <AppIcon name="comment" :size="16" />
+        <AppIcon name="comment" :size="18" />
         <span v-if="comments" class="text-[11px] font-medium">{{
           comments
         }}</span>

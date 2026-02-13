@@ -4,6 +4,15 @@ import type { Complaint, Comment, LikeStatus } from "~/utils/types/complaint";
 const route = useRoute();
 const complaintId = route.params.id;
 
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://flagit.mooo.com/complaints/${complaintId}`,
+    },
+  ],
+});
+
 const user =
   inject<Ref<{ id: number; name: string; email: string } | null>>(
     "currentUser",
@@ -12,6 +21,27 @@ const user =
 const { data: complaint, error } = await useFetch<Complaint>(
   `/api/complaints/${complaintId}`,
 );
+
+useSeoMeta({
+  title: () =>
+    complaint.value
+      ? `${complaint.value.title} — Flagit`
+      : "Complaint — Flagit",
+  ogTitle: () =>
+    complaint.value
+      ? `${complaint.value.title} — Flagit`
+      : "Complaint — Flagit",
+  description: () =>
+    complaint.value
+      ? complaint.value.body.substring(0, 160)
+      : "View complaint details on Flagit.",
+  ogDescription: () =>
+    complaint.value
+      ? complaint.value.body.substring(0, 160)
+      : "View complaint details on Flagit.",
+  ogImage: () => complaint.value?.imageUrl || "https://flagit.mooo.com/logo.png",
+  twitterCard: "summary_large_image",
+});
 
 // --- Comments ---
 const {

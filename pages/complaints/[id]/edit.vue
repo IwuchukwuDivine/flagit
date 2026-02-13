@@ -7,6 +7,11 @@ definePageMeta({
   middleware: "auth",
 });
 
+useSeoMeta({
+  title: "Edit Complaint — Flagit",
+  robots: "noindex, nofollow",
+});
+
 const route = useRoute();
 const complaintId = route.params.id;
 

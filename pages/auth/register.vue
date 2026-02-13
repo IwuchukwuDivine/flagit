@@ -1,4 +1,17 @@
 <script setup lang="ts">
+useSeoMeta({
+  title: "Sign Up — Flagit",
+  ogTitle: "Sign Up — Flagit",
+  description: "Create a Flagit account to report civic issues and help improve your community.",
+  ogDescription: "Create a Flagit account to report civic issues and help improve your community.",
+  ogImage: "https://flagit.mooo.com/logo.png",
+  twitterCard: "summary",
+});
+
+useHead({
+  link: [{ rel: "canonical", href: "https://flagit.mooo.com/auth/register" }],
+});
+
 const name = ref('')
 const email = ref('')
 const password = ref('')

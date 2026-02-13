@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     strict: true,
     typeCheck: false,
   },
+
   app: {
     head: {
       title: "Flagit",
@@ -27,12 +28,20 @@ export default defineNuxtConfig({
           content: "Flagit, Community, Complaints, Issues, Concerns",
         },
       ],
+      link: [
+        {
+          rel: "icon",
+          type: "image/png",
+          href: "/logo.png",
+        },
+      ],
     },
   },
   devServer: {
     port: 3000,
     host: "0.0.0.0",
   },
+  components: true,
   nitro: {
     experimental: {
       database: true,
