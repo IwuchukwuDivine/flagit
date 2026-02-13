@@ -2,7 +2,7 @@
 
 A civic complaints platform where citizens can report issues, upvote problems, and track resolutions in their community. Think of it as a public grievance board focused entirely on local civic issues.
 
-**Live:** [http://130.162.188.80](http://130.162.188.80)
+**Live:** [https://flagit.mooo.com](https://flagit.mooo.com)
 
 ## Features
 
