@@ -1,17 +1,29 @@
 <script setup lang="ts">
 import type { Ref } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { CATEGORIES } from "~/utils/constants/categories";
+import type { LocationValue } from "~/utils/types/location";
 
 const imageUploadRef = ref<{
   selectedFile: Ref<File | null>;
   clearSelection: () => void;
 } | null>(null);
 
+const locationSelectorRef = ref<{
+  validateLocation: () => boolean;
+} | null>(null);
+
 const formData = reactive({
   title: "",
   body: "",
   category: "",
-  location: "",
+});
+
+const locationData = ref<LocationValue>({
+  state: null,
+  city: null,
+  lga: null,
+  street: "",
 });
 
 const errors = reactive({
@@ -25,6 +37,13 @@ const errors = reactive({
 const isSubmitting = ref(false);
 
 const categories = CATEGORIES;
+const searchCategory = ref("");
+const openCategoryDropdown = ref(false);
+
+const filteredCategories = computed(() => {
+  const q = searchCategory.value.toLowerCase()
+  return categories.filter((c) => c.label.toLowerCase().includes(q))
+})
 
 function clearErrors() {
   errors.title = "";
@@ -32,6 +51,12 @@ function clearErrors() {
   errors.category = "";
   errors.location = "";
   errors.general = "";
+}
+
+function selectCategory(cat: any) {
+  formData.category = cat.value
+  searchCategory.value = cat.label
+  openCategoryDropdown.value = false
 }
 
 function validateForm(): boolean {
@@ -50,8 +75,9 @@ function validateForm(): boolean {
     errors.category = "Category is required";
     isValid = false;
   }
-  if (!formData.location.trim()) {
-    errors.location = "Location is required";
+
+  // Validate location using component method
+  if (locationSelectorRef.value && !locationSelectorRef.value.validateLocation()) {
     isValid = false;
   }
 
@@ -81,13 +107,23 @@ async function handleSubmit() {
       imageUrl = uploadResponse.url;
     }
 
+    // Build location string from components
+    const location = [
+      locationData.value.state,
+      locationData.value.city,
+      locationData.value.lga,
+      locationData.value.street,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
     await $fetch("/api/complaints", {
       method: "POST",
       body: {
         title: formData.title,
         body: formData.body,
         category: formData.category,
-        location: formData.location,
+        location,
         imageUrl,
       },
     });
@@ -101,6 +137,14 @@ async function handleSubmit() {
     isSubmitting.value = false;
   }
 }
+
+// Sync category label when formData.category changes
+watch(() => formData.category, (newVal) => {
+  if (newVal) {
+    const cat = categories.find(c => c.value === newVal)
+    if (cat) searchCategory.value = cat.label
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -150,51 +194,51 @@ async function handleSubmit() {
       </p>
     </div>
 
-    <!-- Category + Location -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label
-          for="category"
-          class="block text-sm font-medium text-white/70 mb-1.5"
-        >
-          Category <span class="text-amber-400">*</span>
-        </label>
-        <select
-          id="category"
-          v-model="formData.category"
-          class="input-field"
-          :class="{ 'input-error': errors.category }"
-        >
-          <option value="" disabled>Select a category</option>
-          <option v-for="cat in categories" :key="cat.value" :value="cat.value">
-            {{ cat.label }}
-          </option>
-        </select>
-        <p v-if="errors.category" class="mt-1.5 text-sm text-red-400">
-          {{ errors.category }}
-        </p>
-      </div>
-
-      <div>
-        <label
-          for="location"
-          class="block text-sm font-medium text-white/70 mb-1.5"
-        >
-          Location <span class="text-amber-400">*</span>
-        </label>
+    <!-- Category -->
+    <div>
+      <label class="block text-sm font-medium text-white/70 mb-1.5">
+        Category <span class="text-amber-400">*</span>
+      </label>
+      <div class="relative">
         <input
-          id="location"
-          v-model="formData.location"
+          v-model="searchCategory"
           type="text"
           class="input-field"
-          :class="{ 'input-error': errors.location }"
-          placeholder="Street address or area"
+          :class="{ 'input-error': errors.category }"
+          placeholder="Select a category..."
+          @focus="openCategoryDropdown = true"
+          @blur="openCategoryDropdown = false"
         />
-        <p v-if="errors.location" class="mt-1.5 text-sm text-red-400">
-          {{ errors.location }}
-        </p>
+        <ul
+          v-if="openCategoryDropdown"
+          class="absolute z-50 top-full mt-1 w-full bg-slate-800 border border-amber-400 rounded-lg max-h-48 overflow-y-auto shadow-lg"
+        >
+          <li
+            v-for="cat in filteredCategories"
+            :key="cat.value"
+            class="px-3 py-2 text-white/80 hover:bg-white/10 cursor-pointer text-sm"
+            @mousedown.prevent="selectCategory(cat)"
+          >
+            {{ cat.label }}
+          </li>
+          <li
+            v-if="filteredCategories.length === 0"
+            class="px-3 py-2 text-white/40 text-sm"
+          >
+            No categories found
+          </li>
+        </ul>
       </div>
+      <p v-if="errors.category" class="mt-1.5 text-sm text-red-400">
+        {{ errors.category }}
+      </p>
     </div>
+
+    <!-- Location Selector -->
+    <LocationSelector
+      ref="locationSelectorRef"
+      v-model="locationData"
+    />
 
     <!-- Image Upload -->
     <ImageUpload ref="imageUploadRef" />
